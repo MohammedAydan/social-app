@@ -24,6 +24,8 @@ const SideBar = () => {
     const { user, isAuthenticated, logout } = useAuth();
     const [open, setOpen] = useState(false);
 
+    if(!isAuthenticated) return;
+
     return (
         <>
             {/* Open Button (Small Screens Only) */}

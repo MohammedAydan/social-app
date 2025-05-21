@@ -124,24 +124,24 @@ const SignInPage = () => {
                 </form>
               </Form>
             </div>
-            <div className="flex flex-col sm:flex-row justify-between gap-2 mt-4">
-              <Link to="/register" className="w-full sm:w-1/2">
-                <Button
-                  disabled={isFormLoading}
-                  variant="outline"
-                  aria-label="Register button"
-                  className="w-full py-6"
-                >
-                  Register
-                </Button>
-              </Link>
+            <div className="flex flex-col gap-3 mt-6">
               <Button
+                asChild
+                variant="outline"
                 disabled={isFormLoading}
+                className="w-full py-5"
+                aria-label="Register button"
+              >
+                <Link to="/register">Register</Link>
+              </Button>
+              <Button
+                asChild
                 variant="ghost"
-                className="py-6 w-full sm:w-1/2 text-primary hover:text-primary/80 hover:bg-muted transition-all duration-200"
+                disabled={isFormLoading}
+                className="w-full py-5 text-primary hover:text-primary/80 hover:bg-muted transition-all duration-200"
                 aria-label="Forgot password link"
               >
-                Forgot Password?
+                <Link to="/forgot-password">Forgot Password?</Link>
               </Button>
             </div>
           </div>

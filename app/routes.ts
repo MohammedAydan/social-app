@@ -7,6 +7,7 @@ export default [
     route("/post/:postId", "routes/post.tsx"),
     route("/sign-in", "routes/sign-in.tsx"),
     route("/register", "routes/register.tsx"),
+    route("/forgot-password", "routes/forgot-password.tsx"),
     route("/profile", "routes/profile.tsx"),
     route("/profile/:userId", "routes/user-profile.tsx"),
     route("/notifications", "routes/notifications.tsx"),

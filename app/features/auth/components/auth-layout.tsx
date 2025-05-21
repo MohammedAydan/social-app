@@ -13,7 +13,7 @@ const AuthLayout = ({ children }: InitialLoadingProps) => {
     const location = useLocation();
 
     const pathname = location.pathname;
-    const publicRoutes = ["/sign-in", "/register"];
+    const publicRoutes = ["/sign-in", "/register", "/forgot-password"];
     const isPublicPage = publicRoutes.includes(pathname);
 
     useEffect(() => {
