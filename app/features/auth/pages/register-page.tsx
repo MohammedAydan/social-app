@@ -52,7 +52,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const Register = () => {
-    const { initialLoading, isLoading, register } = useAuth();
+    const { initialLoading, isLoading, register, errorMessage, errors } = useAuth();
 
     const form = useForm<FormData>({
         resolver: zodResolver(formSchema),
@@ -83,6 +83,18 @@ const Register = () => {
                     <h1 className="text-2xl font-semibold text-foreground">Sign Up</h1>
                     <p className="text-muted-foreground">Create a new account</p>
                 </div>
+
+
+                {(errorMessage || (errors && errors.length > 0)) && (
+                    <div className="space-y-1.5 text-center mb-5 bg-foreground/10 p-4 rounded-md">
+                        {errorMessage && (
+                            <p className="text-destructive">{errorMessage}</p>
+                        )}
+                        {errors && errors.map((e, idx) => (
+                            <p className="text-destructive" key={idx}>{e}</p>
+                        ))}
+                    </div>
+                )}
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

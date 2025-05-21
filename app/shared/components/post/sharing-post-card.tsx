@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader } from '~/components/ui/card';
 const SharingPostCard = ({ post }: { post: PostType }) => {
 
   return (
-    <Link to={`/post/${post.id}`}>
+    <Link to={`/post/${post?.id}`}>
       <div className="w-full max-w-3xl my-4">
         <Card className='w-full shadow-xs'>
           <CardHeader>

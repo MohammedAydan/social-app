@@ -90,7 +90,7 @@ export const CommentsProvider = ({ children }: { children: ReactNode }) => {
             const response = await getPostComments(post?.id || "", pageParam, COMMENTS_PER_PAGE);
             return {
                 data: response.data,
-                nextPage: response.data.length === COMMENTS_PER_PAGE ? pageParam + 1 : undefined,
+                nextPage: response.data?.length === COMMENTS_PER_PAGE ? pageParam + 1 : undefined,
             };
         },
         getNextPageParam: (lastPage) => lastPage.nextPage,

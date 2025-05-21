@@ -1,4 +1,9 @@
-import { createContext, useState, useCallback, type ReactNode } from "react";
+import {
+    createContext,
+    useState,
+    useCallback,
+    type ReactNode,
+} from "react";
 import { toast } from "sonner";
 import {
     likePost,
@@ -11,7 +16,6 @@ import { useFeed } from "../hooks/use-feed";
 
 interface PostContextProps {
     post: PostType | null;
-    comments: CommentType[];
     loadingSharePost: boolean;
     deletePostLoading: boolean;
     toggleLike: () => Promise<void>;
@@ -19,11 +23,11 @@ interface PostContextProps {
     decrementCommentsCounter: () => void;
     sharePostHandler: () => Promise<void>;
     deletePostHandler: () => Promise<void>;
+    updatePostLocalHandler?: (post: PostType) => void;
 }
 
 const initialContext: PostContextProps = {
     post: null,
-    comments: [],
     loadingSharePost: false,
     deletePostLoading: false,
     toggleLike: async () => {
@@ -50,93 +54,52 @@ interface PostProviderProps {
     initialPostData: PostType;
 }
 
-export const PostProvider = ({
-    children,
-    initialPostData
-}: PostProviderProps) => {
+export const PostProvider = ({ children, initialPostData }: PostProviderProps) => {
     const [post, setPost] = useState<PostType | null>(initialPostData);
-    const [comments, setComments] = useState<CommentType[]>([]);
     const [loadingSharePost, setLoadingSharePost] = useState(false);
     const [deletePostLoading, setDeletePostLoading] = useState(false);
 
     const { addPostLocal, deletePostLocal } = useFeed();
 
-    // Toggle like status locally before API call
     const toggleLikeLocal = useCallback(() => {
-        setPost((prevPost) => {
-            if (!prevPost) return prevPost;
-
+        setPost(prev => {
+            if (!prev) return prev;
             return {
-                ...prevPost,
-                isLiked: !prevPost.isLiked,
-                likesCount: prevPost.isLiked
-                    ? Math.max(0, prevPost.likesCount - 1)
-                    : prevPost.likesCount + 1,
+                ...prev,
+                isLiked: !prev.isLiked,
+                likesCount: prev.isLiked ? Math.max(0, prev.likesCount - 1) : prev.likesCount + 1,
             };
         });
     }, []);
 
-    // Toggle post like with optimistic update
     const toggleLike = useCallback(async () => {
-        if (!post) {
-            toast.error("Cannot like post", { description: "Post data is missing" });
-            return;
-        }
+        if (!post) return;
 
+        toggleLikeLocal();
         try {
-            // Optimistic update
-            toggleLikeLocal();
-
-            // API call
             await likePost(post.id);
         } catch (error) {
-            // Revert on error
-            toggleLikeLocal();
+            toggleLikeLocal(); // revert
             toast.error("Failed to like post", {
                 description: error instanceof Error ? error.message : "Unknown error"
             });
         }
     }, [post, toggleLikeLocal]);
 
-    // Increment comments counter
     const incrementCommentsCounter = useCallback(() => {
-        setPost((prevPost) => {
-            if (!prevPost) return prevPost;
-
-            return {
-                ...prevPost,
-                commentsCount: prevPost.commentsCount + 1,
-            };
-        });
+        setPost(prev => prev ? { ...prev, commentsCount: prev.commentsCount + 1 } : prev);
     }, []);
 
-    // Decrement comments counter
     const decrementCommentsCounter = useCallback(() => {
-        setPost((prevPost) => {
-            if (!prevPost) return prevPost;
-
-            return {
-                ...prevPost,
-                commentsCount: Math.max(0, prevPost.commentsCount - 1),
-            };
-        });
+        setPost(prev => prev ? { ...prev, commentsCount: Math.max(0, prev.commentsCount - 1) } : prev);
     }, []);
 
-    // Share post handler
     const sharePostHandler = useCallback(async () => {
-        if (!post) {
-            toast.error("Cannot share post", { description: "Post data is missing" });
-            return;
-        }
+        if (!post) return;
 
+        setLoadingSharePost(true);
         try {
-            setLoadingSharePost(true);
-
-            const response = await sharePost({
-                parentPostId: post.id,
-                visibility: "public"
-            });
-
+            const response = await sharePost({ parentPostId: post.id, visibility: "public" });
             if (response.data) {
                 addPostLocal(response.data);
                 toast.success("Post shared successfully");
@@ -150,20 +113,14 @@ export const PostProvider = ({
         }
     }, [post, addPostLocal]);
 
-    // Delete post handler
     const deletePostHandler = useCallback(async () => {
-        if (!post) {
-            toast.error("Cannot delete post", { description: "Post data is missing" });
-            return;
-        }
+        if (!post) return;
 
+        setDeletePostLoading(true);
         try {
-            setDeletePostLoading(true);
-
             const response = await apiDeletePost(post.id);
-
-            if (response.status === 200 || response.status === 201 || response.status === 204) {
-                deletePostLocal(post.id);
+            if (response.success) {
+                deletePostLocal(post?.id);
                 setPost(null);
                 toast.success("Post deleted successfully");
             } else {
@@ -178,21 +135,24 @@ export const PostProvider = ({
         }
     }, [post, deletePostLocal]);
 
-    // Context value
-    const contextValue: PostContextProps = {
-        post,
-        comments,
-        loadingSharePost,
-        deletePostLoading,
-        toggleLike,
-        incrementCommentsCounter,
-        decrementCommentsCounter,
-        sharePostHandler,
-        deletePostHandler,
-    };
+    const updatePostLocalHandler = useCallback((updatedPost: PostType) => {
+        setPost(prev => prev ? { ...prev, ...updatedPost } : prev);
+    }, []);
 
     return (
-        <PostContext.Provider value={contextValue}>
+        <PostContext.Provider
+            value={{
+                post,
+                loadingSharePost,
+                deletePostLoading,
+                toggleLike,
+                incrementCommentsCounter,
+                decrementCommentsCounter,
+                updatePostLocalHandler,
+                sharePostHandler,
+                deletePostHandler,
+            }}
+        >
             {children}
         </PostContext.Provider>
     );

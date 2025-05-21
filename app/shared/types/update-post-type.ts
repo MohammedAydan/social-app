@@ -1,9 +1,9 @@
-import { MediaType } from "./media-type";
+import type { CreateMediaRequest } from "./create-post-type";
 
 export interface UpdatePostRequest {
     id?: string;
     title?: string;
     content?: string;
     visibility: string;
-    media: MediaType[];
+    media: CreateMediaRequest[] | [];
 }

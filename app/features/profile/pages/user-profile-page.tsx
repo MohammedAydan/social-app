@@ -15,7 +15,7 @@ const UserProfilePage = () => {
   const { user: authUser } = useAuth();
   const { data: user, isError, isLoading } = useQuery<UserType | null>({
     queryKey: ["user-profile", userId],
-    queryFn: () => getUserProfile(userId ?? "").then((res) => res.data),
+    queryFn: () => getUserProfile(userId ?? "").then((res) => res.data ?? null),
     enabled: !!userId
   });
 

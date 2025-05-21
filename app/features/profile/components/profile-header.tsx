@@ -3,6 +3,7 @@ import type { UserType } from "~/shared/types/user-type";
 import FollowButton from "./follow-button";
 import { Separator } from "~/components/ui/separator";
 import { BadgeCheck } from "lucide-react";
+import UpdateUserDialog from "./update-user-dialog";
 
 interface ProfileHeaderProps {
     user: UserType;
@@ -31,6 +32,11 @@ const ProfileHeader = ({ user, authenticatedUser = false }: ProfileHeaderProps) 
                             isFollower={user.isFollower}
                             isFollowAccepted={user.isFollowerAccepted}
                         />}
+                        {authenticatedUser && (
+                            <div className="flex gap-4">
+                                <UpdateUserDialog />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

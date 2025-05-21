@@ -21,3 +21,14 @@ export interface UserType {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface UpdateUserType {
+    id: string;
+    firstName: string;
+    lastName: string;
+    userName: string;
+    birthDate: Date;
+    bio: string;
+    profileImageUrl: string;
+    isPrivate: boolean;
+}

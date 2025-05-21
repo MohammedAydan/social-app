@@ -17,7 +17,7 @@ export const useMyUserPostsQuery = () => {
             const response = await getMyPosts(pageParam, LIMIT);
             return {
                 data: response.data,
-                nextPage: response.data.length === LIMIT ? pageParam + 1 : undefined,
+                nextPage: response.data?.length === LIMIT ? pageParam + 1 : undefined,
             };
         },
         getNextPageParam: (lastPage) => lastPage.nextPage,
@@ -56,7 +56,7 @@ const MyUserPosts = () => {
 
     if (status === 'pending') {
         return (
-            <div className="flex flex-col items-center px-4 pt-12">
+            <div className="flex flex-col items-center md:px-4 pt-12">
                 <LoadingPost />
                 <LoadingPost />
             </div>
@@ -68,7 +68,7 @@ const MyUserPosts = () => {
             <div className="flex flex-col items-center justify-center py-6">
                 <p className="text-red-500">{error.message}</p>
                 <button
-                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-2xl"
+                    className="mt-4 md:px-4 py-2 bg-blue-500 text-white rounded-2xl"
                     onClick={() => window.location.reload()}
                 >
                     Retry
@@ -78,7 +78,7 @@ const MyUserPosts = () => {
     }
 
     return (
-        <div className="flex flex-col items-center px-4 pt-12">
+        <div className="flex flex-col items-center md:px-4 pt-12">
             {data.pages.flatMap((page) =>
                 page.data?.map((post: PostType) => (
                     <PostCard key={post.id} post={post} />
@@ -90,7 +90,7 @@ const MyUserPosts = () => {
                     <LoadingPost />
                 </div>
             )}
-            {!isFetchingNextPage && !hasNextPage && data.pages[0]?.data.length === 0 && (
+            {!isFetchingNextPage && !hasNextPage && data.pages[0]?.data?.length === 0 && (
                 <div className="text-muted-foreground py-8">
                     No posts yet
                 </div>

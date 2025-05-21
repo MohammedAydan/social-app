@@ -14,7 +14,7 @@ const formSchema = z.object({
 });
 
 const SignInPage = () => {
-  const { initialLoading, isLoading, login } = useAuth();
+  const { initialLoading, isLoading, login, errorMessage, errors } = useAuth();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -45,6 +45,18 @@ const SignInPage = () => {
               <h1 className="text-2xl font-semibold text-foreground">Sign In</h1>
               <p className="text-muted-foreground">Sign in to your account</p>
             </div>
+
+            {(errorMessage || (errors && errors.length > 0)) && (
+              <div className="space-y-1.5 text-center mb-5 bg-foreground/10 p-4 rounded-md">
+                {errorMessage && (
+                  <p className="text-destructive">{errorMessage}</p>
+                )}
+                {errors && errors.map((e, idx) => (
+                  <p className="text-destructive" key={idx}>{e}</p>
+                ))}
+              </div>
+            )}
+
             <div className="space-y-4">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" noValidate>

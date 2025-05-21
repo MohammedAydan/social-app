@@ -8,7 +8,7 @@ const PostsSection = () => {
 
     if (isLoading) {
         return (
-            <div className="flex flex-col items-center px-4 pt-20 md:pl-16 pl-0">
+            <div className="flex flex-col items-center md:px-4 pt-20 md:pl-16 pl-0">
                 <LoadingPost />
                 <LoadingPost />
             </div>
@@ -30,7 +30,7 @@ const PostsSection = () => {
     }
 
     return (
-        <div className="flex flex-col items-center px-4 pt-12">
+        <div className="flex flex-col items-center md:px-4 pt-12">
             {posts?.length == 0 && (
                 <div className="text-muted-foreground py-8">
                     No posts yet

@@ -2,10 +2,16 @@
 import axios from "axios";
 import { accessTokenKey } from "../utils/strings";
 
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
+const apiKey = import.meta.env.VITE_API_KEY;
+console.log(apiKey);
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: apiUrl,
   headers: {
     "Content-Type": "application/json",
+    "Accept": "application/json",
+    "x-api-key": apiKey,
   },
 });
 

@@ -12,6 +12,7 @@ import DeletePost from '~/features/feed/components/delete-post';
 import UserAvatar from '../user-avatar';
 import { useAuth } from '~/features/auth/hooks/use-auth';
 import { formatRelativeTime } from '~/lib/utils';
+import UpdatePostDialog from '~/features/feed/pages/update-post';
 
 interface PostHeaderProps {
     isPostSharing?: boolean;
@@ -56,9 +57,9 @@ const PostHeader = ({ isPostSharing = false, isPostPage = false }: PostHeaderPro
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="end" className="min-w-[150px]">
-                        <DropdownMenuItem className="cursor-pointer">
-                            <Pencil className="mr-2 h-4 w-4" /> Edit
-                        </DropdownMenuItem>
+                        {!post?.parentPostId && (
+                            <UpdatePostDialog />
+                        )}
                         <DeletePost isNavigate={isPostPage} />
                     </DropdownMenuContent>
                 </DropdownMenu>
