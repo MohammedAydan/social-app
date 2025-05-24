@@ -4,7 +4,6 @@ import { accessTokenKey } from "../utils/strings";
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 const apiKey = import.meta.env.VITE_API_KEY;
-console.log(apiKey);
 
 const api = axios.create({
   baseURL: apiUrl,

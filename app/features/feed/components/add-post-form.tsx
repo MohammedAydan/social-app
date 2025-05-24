@@ -117,14 +117,14 @@ const AddPostForm: React.FC<AddPostFormProps> = ({
             </Button>
           </div>
         ))}
-        <Button
+        {/* <Button
           variant="outline"
           onClick={addMedia}
           disabled={isPending}
           className="w-full my-3"
         >
           + Add Media
-        </Button>
+        </Button> */}
       </div>
     </div>
   );
