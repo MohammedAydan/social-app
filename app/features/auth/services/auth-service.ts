@@ -9,6 +9,8 @@ import type { SignInType } from "~/shared/types/sign-in-type";
 import {
     saveAccessToken,
     removeAccessToken,
+    saveRefreshToken,
+    removeRefreshToken,
 } from "~/shared/utils/token";
 
 export interface IAuthService {
@@ -23,6 +25,7 @@ export class AuthService implements IAuthService {
 
         if (response.success && response.data?.accessToken) {
             saveAccessToken(response.data.accessToken);
+            saveRefreshToken(response.data.refreshToken);
         }
 
         return response;
@@ -33,6 +36,7 @@ export class AuthService implements IAuthService {
 
         if (response.success && response.data?.accessToken) {
             saveAccessToken(response.data.accessToken);
+            saveRefreshToken(response.data.refreshToken);
         }
 
         return response;
@@ -40,5 +44,6 @@ export class AuthService implements IAuthService {
 
     async signOut(): Promise<void> {
         removeAccessToken();
+        removeRefreshToken();
     }
 }

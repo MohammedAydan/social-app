@@ -3,6 +3,7 @@ export interface UserType {
     firstName: string;
     lastName: string;
     userName: string;
+    userGender: string;
     email: string;
     birthDate: Date;
     bio: string;
@@ -27,6 +28,7 @@ export interface UpdateUserType {
     firstName: string;
     lastName: string;
     userName: string;
+    userGender: string;
     birthDate: Date;
     bio: string;
     profileImageUrl: string;

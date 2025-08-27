@@ -23,8 +23,10 @@ export const searchUsers = (
     }));
 
 // Update user profile
-export const updateUserProfile = (payload: UpdateUserType): Promise<ApiResponse<UserType>> =>
-    handleRequest(api.put("/api/User/update-user", payload));
+export const updateUserProfile = (payload: UpdateUserType): Promise<ApiResponse<UserType>> => {
+    console.log(payload);
+    return handleRequest(api.put("/api/User/update-user", payload));
+}
 
 // Delete user account
 export const deleteUserAccount = (): Promise<ApiResponse<null>> =>

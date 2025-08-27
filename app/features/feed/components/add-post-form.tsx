@@ -69,7 +69,7 @@ const AddPostForm: React.FC<AddPostFormProps> = ({
         />
       </div>
 
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <Label>Media</Label>
         {media.map((m, index) => (
           <div key={index} className="border p-3 rounded-md space-y-2">
@@ -117,15 +117,15 @@ const AddPostForm: React.FC<AddPostFormProps> = ({
             </Button>
           </div>
         ))}
-        {/* <Button
+        <Button
           variant="outline"
           onClick={addMedia}
           disabled={isPending}
           className="w-full my-3"
         >
           + Add Media
-        </Button> */}
-      </div>
+        </Button>
+      </div> */}
     </div>
   );
 };

@@ -2,3 +2,7 @@
 build
 node_modules
 README.md
+
+# Ignore environment variable files
+.env
+.env.local

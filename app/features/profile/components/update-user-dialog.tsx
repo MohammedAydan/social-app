@@ -17,6 +17,7 @@ import { Pencil } from 'lucide-react';
 import { useAuth } from '~/features/auth/hooks/use-auth';
 import type { UpdateUserType } from '~/shared/types/user-type';
 import { updateUserProfile } from '~/shared/api';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
 
 interface UpdateUserDialogProps {
     triggerAs?: 'button' | 'dropdown';
@@ -35,6 +36,7 @@ const UpdateUserDialog = ({ triggerAs = 'button' }: UpdateUserDialogProps) => {
         lastName: user.lastName || '',
         userName: user.userName || '',
         birthDate: user.birthDate ? new Date(user.birthDate) : new Date(),
+        userGender: user.userGender || '',
         bio: user.bio || '',
         profileImageUrl: user.profileImageUrl || '',
         isPrivate: user.isPrivate ?? false,
@@ -101,6 +103,22 @@ const UpdateUserDialog = ({ triggerAs = 'button' }: UpdateUserDialogProps) => {
                             }))
                         }
                     />
+
+                    <Select
+                        value={form.userGender}
+                        onValueChange={value => setForm(prev => ({ ...prev, userGender: value }))}
+                    >
+                        <SelectTrigger
+                            className="w-full py-6 border-input bg-background text-foreground focus:ring-2 focus:ring-primary"
+                        >
+                            <SelectValue placeholder="Select Gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="male">Male</SelectItem>
+                            <SelectItem value="female">Female</SelectItem>
+                        </SelectContent>
+                    </Select>
+
                     <Textarea name="bio" value={form.bio} onChange={handleChange} placeholder="Bio" />
                     <Input name="profileImageUrl" value={form.profileImageUrl} onChange={handleChange} placeholder="Profile Image URL" />
 

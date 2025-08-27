@@ -1,5 +1,5 @@
 import RegisterPage from "~/features/auth/pages/register-page";
-import type { Route } from "./+types/home";
+import type { Route } from "../+types/root";
 
 export function meta({ }: Route.MetaArgs) {
     return [

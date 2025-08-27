@@ -15,6 +15,7 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { Link } from "react-router";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 
 // ✅ Validation schema
 const formSchema = z.object({
@@ -41,6 +42,7 @@ const formSchema = z.object({
             },
             { message: "Birth date must be in the past" }
         ),
+    userGender: z.enum(["male", "female"], { required_error: "Gender is required" }),
     bio: z.string().max(1000, "Bio must be at most 1000 characters long").nonempty("Bio is required"),
     password: z
         .string()
@@ -62,6 +64,7 @@ const Register = () => {
             userName: "",
             email: "",
             birthDate: "",
+            userGender: undefined,
             bio: "",
             password: "",
         },
@@ -71,6 +74,7 @@ const Register = () => {
         const formattedValues = {
             ...values,
             birthDate: new Date(values.birthDate), // ✅ Convert string to Date
+            userGender: values.userGender,
         };
 
         await register(formattedValues); // ✅ Should now match CreateUserType
@@ -126,6 +130,31 @@ const Register = () => {
                                 )}
                             />
                         ))}
+
+                        {/* Gender Dropdown */}
+                        <FormField
+                            control={form.control}
+                            name="userGender"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-foreground">Gender</FormLabel>
+                                    <FormControl>
+                                        <Select {...field}>
+                                            <SelectTrigger
+                                                className="w-full py-6 border-input bg-background text-foreground focus:ring-2 focus:ring-primary"
+                                            >
+                                                <SelectValue placeholder="Select Gender" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="male">Male</SelectItem>
+                                                <SelectItem value="female">Female</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage className="text-destructive" />
+                                </FormItem>
+                            )}
+                        />
 
                         <FormField
                             control={form.control}
