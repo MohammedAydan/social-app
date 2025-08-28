@@ -5,7 +5,7 @@ export const handleRequest = async <T>(request: Promise<any>): Promise<ApiRespon
         const response = await request;
         return response.data;
     } catch (error: any) {
-        console.log(error);
+        // console.log(error);
         if (error.response?.data) {
             return error.response.data;
         }

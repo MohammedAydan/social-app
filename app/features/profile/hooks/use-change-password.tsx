@@ -49,7 +49,7 @@ export const useChangePassword = () => {
                 return;
             }
         } catch (error) {
-            console.error('Update failed:', error);
+            // console.error('Update failed:', error);
             setErrors(['Failed to change password. Please try again.']);
             toast.error("Password change failed", { description: "Failed to change password. Please try again." });
         } finally {

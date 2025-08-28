@@ -12,7 +12,6 @@ interface ProfileHeaderProps {
 }
 
 const ProfileHeader = ({ user, authenticatedUser = false }: ProfileHeaderProps) => {
-    console.log(user);
     return (
         <div className="flex flex-col w-full max-w-xl">
             <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-8 mt-6">

@@ -29,7 +29,7 @@ const DeletePost = ({ isNavigate = false }: { isNavigate?: boolean }) => {
                 navigate("/");
             }
         } catch (error) {
-            console.error('Failed to delete post', error);
+            // console.error('Failed to delete post', error);
         }
     };
 

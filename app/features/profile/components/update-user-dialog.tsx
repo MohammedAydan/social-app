@@ -60,7 +60,7 @@ const UpdateUserDialog = ({ triggerAs = 'button' }: UpdateUserDialogProps) => {
             setUser({ ...user, ...form });
             setOpen(false);
         } catch (error) {
-            console.error('Update failed:', error);
+            // console.error('Update failed:', error);
         } finally {
             setLoading(false);
         }

@@ -24,7 +24,7 @@ export const searchUsers = (
 
 // Update user profile
 export const updateUserProfile = (payload: UpdateUserType): Promise<ApiResponse<UserType>> => {
-    console.log(payload);
+    // console.log(payload);
     return handleRequest(api.put("/api/User/update-user", payload));
 }
 
@@ -33,12 +33,12 @@ export const changePassword = (payload: ChangePassword): Promise<ApiResponse<obj
 }
 
 export const forgetPassword = async (payload: ForgetPassword): Promise<ApiResponse<object>> => {
-    console.log(payload);
+    // console.log(payload);
     return handleRequest(api.post("/api/User/forget-password", payload));
 }
 
 export const resetPassword = async (payload: ResetPassword): Promise<ApiResponse<object>> => {
-    console.log(payload);
+    // console.log(payload);
     return handleRequest(api.post("/api/User/reset-password", payload));
 }
 
