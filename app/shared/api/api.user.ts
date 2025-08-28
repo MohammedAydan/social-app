@@ -28,6 +28,35 @@ export const updateUserProfile = (payload: UpdateUserType): Promise<ApiResponse<
     return handleRequest(api.put("/api/User/update-user", payload));
 }
 
+export const changePassword = (payload: ChangePassword): Promise<ApiResponse<object>> => {
+    return handleRequest(api.post("/api/User/change-password", payload));
+}
+
+export const forgetPassword = async (payload: ForgetPassword): Promise<ApiResponse<object>> => {
+    console.log(payload);
+    return handleRequest(api.post("/api/User/forget-password", payload));
+}
+
+export const resetPassword = async (payload: ResetPassword): Promise<ApiResponse<object>> => {
+    console.log(payload);
+    return handleRequest(api.post("/api/User/reset-password", payload));
+}
+
 // Delete user account
 export const deleteUserAccount = (): Promise<ApiResponse<null>> =>
     handleRequest(api.delete("/api/User/delete-user"));
+
+interface ChangePassword {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+interface ForgetPassword {
+    email: string;
+}
+interface ResetPassword {
+    email: string;
+    token: string;
+    password: string;
+    confirmPassword: string;
+}
