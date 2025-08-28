@@ -4,7 +4,7 @@ import UserProfilePage from "~/features/profile/pages/user-profile-page";
 export function meta({ }: MetaArgs) {
     const domain = typeof window !== "undefined"
         ? window.location.origin
-        : "https://mohammed-aydan.me";
+        : "https://social.mohammed-aydan.me";
     return [
         { title: "User Profile" },
         { name: "description", content: "User Profile description" },

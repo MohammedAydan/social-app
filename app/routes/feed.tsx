@@ -4,7 +4,7 @@ import FeedPage from "~/features/feed/pages/feed-page";
 export function meta({ }: MetaArgs) {
     const domain = typeof window !== "undefined"
         ? window.location.origin
-        : "https://mohammed-aydan.me";
+        : "https://social.mohammed-aydan.me";
     return [
         { title: "Feed Page" },
         { name: "description", content: "Feed Page" },

@@ -4,7 +4,7 @@ import SignInPage from "~/features/auth/pages/sign-in-page";
 export function meta({ }: MetaArgs) {
     const domain = typeof window !== "undefined"
         ? window.location.origin
-        : "https://mohammed-aydan.me";
+        : "https://social.mohammed-aydan.me";
     return [
         { title: "Sign In" },
         { name: "description", content: "Sign In Page" },

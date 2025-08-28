@@ -4,7 +4,7 @@ import ForgotPasswordPage from "~/features/auth/pages/forgot-password-page";
 export function meta({ }: MetaArgs) {
     const domain = typeof window !== "undefined"
         ? window.location.origin
-        : "https://mohammed-aydan.me";
+        : "https://social.mohammed-aydan.me";
     return [
         { title: "Forgot Password" },
         { name: "description", content: "Forgot Password Page" },

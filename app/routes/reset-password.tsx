@@ -4,7 +4,7 @@ import ResetPasswordPage from "~/features/auth/pages/reset-password-page";
 export function meta({ }: MetaArgs) {
     const domain = typeof window !== "undefined"
         ? window.location.origin
-        : "https://mohammed-aydan.me";
+        : "https://social.mohammed-aydan.me";
     return [
         { title: "Reset Password" },
         { name: "description", content: "Reset Password Page" },

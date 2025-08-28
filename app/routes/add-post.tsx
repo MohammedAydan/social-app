@@ -4,7 +4,7 @@ import AddPostPage from "~/features/feed/pages/add-post-page";
 export function meta({ }: MetaArgs) {
     const domain = typeof window !== "undefined"
         ? window.location.origin
-        : "https://mohammed-aydan.me";
+        : "https://social.mohammed-aydan.me";
     return [
         { title: "Add Post Page" },
         { name: "description", content: "Add Post Page" },

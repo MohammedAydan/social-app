@@ -4,7 +4,7 @@ import type { Route } from "../+types/root";
 export function meta({ }: Route.MetaArgs) {
     const domain = typeof window !== "undefined"
         ? window.location.origin
-        : "https://mohammed-aydan.me";
+        : "https://social.mohammed-aydan.me";
     return [
         { title: "Register" },
         { name: "description", content: "Register page" },

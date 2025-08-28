@@ -4,7 +4,7 @@ import NotificationsPage from "~/features/notifications/pages/notifications-page
 export function meta({ }: MetaArgs) {
     const domain = typeof window !== "undefined"
         ? window.location.origin
-        : "https://mohammed-aydan.me";
+        : "https://social.mohammed-aydan.me";
     return [
         { title: "Notifications Page" },
         { name: "description", content: "Notifications Page" },
