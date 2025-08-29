@@ -1,4 +1,5 @@
 import type { MetaArgs } from "react-router";
+import { MediaProvider } from "~/features/feed/hooks/use-manage-media";
 import AddPostPage from "~/features/feed/pages/add-post-page";
 
 export function meta({ }: MetaArgs) {
@@ -24,5 +25,7 @@ export function meta({ }: MetaArgs) {
 }
 
 export default function Feed() {
-    return <AddPostPage />;
+    return (
+        <AddPostPage />
+    );
 }

@@ -6,7 +6,7 @@ import {
     type KeyboardEvent,
 } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { BadgeCheck, User } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
@@ -28,7 +28,6 @@ const SearchPage = () => {
     const observer = useRef<IntersectionObserver | null>(null);
     const lastElementRef = useRef<HTMLDivElement | null>(null);
 
-    // Debounce user input
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedQuery(searchQuery.trim());
@@ -36,7 +35,6 @@ const SearchPage = () => {
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
-    // React Query: Infinite search
     const {
         data,
         isLoading,
@@ -59,13 +57,10 @@ const SearchPage = () => {
         enabled: debouncedQuery.length > 0,
     });
 
-    // Infinite scroll logic
     const lastResultElementRef = useCallback(
         (node: HTMLDivElement) => {
             if (isLoading || isFetchingNextPage) return;
-
             if (observer.current) observer.current.disconnect();
-
             observer.current = new IntersectionObserver(
                 (entries) => {
                     if (entries[0].isIntersecting && hasNextPage) {
@@ -74,19 +69,16 @@ const SearchPage = () => {
                 },
                 { threshold: 0.5 }
             );
-
             if (node) observer.current.observe(node);
             lastElementRef.current = node;
         },
         [isLoading, isFetchingNextPage, fetchNextPage, hasNextPage]
     );
 
-    // Handle enter key
     const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") handleSearch();
     };
 
-    // Manual search trigger
     const handleSearch = () => {
         if (searchQuery.trim()) refetch();
     };
@@ -95,36 +87,40 @@ const SearchPage = () => {
 
     const renderSkeletons = (count: number) =>
         Array.from({ length: count }).map((_, i) => (
-            <Card key={`skeleton-${i}`} className="p-6">
+            <Card key={`skeleton-${i}`} className="p-6 rounded-xl shadow-sm">
                 <div className="flex items-center gap-4">
-                    <Skeleton className="h-12 w-12 rounded-full" />
+                    <Skeleton className="h-14 w-14 rounded-full" />
                     <div className="space-y-2 flex-1">
-                        <Skeleton className="h-4 w-1/3" />
-                        <Skeleton className="h-3 w-1/2" />
+                        <Skeleton className="h-5 w-1/3 rounded" />
+                        <Skeleton className="h-4 w-1/2 rounded" />
+                        <Skeleton className="h-3 w-2/3 rounded" />
                     </div>
+                    <Skeleton className="h-8 w-24 rounded" />
                 </div>
             </Card>
         ));
 
     return (
-        <div className="min-h-screen bg-background p-6 pt-24 md:p-20 pl-0 md:pl-16 ">
+        <div className="min-h-screen bg-background p-0 pt-24 md:p-24 md:pt-24 pl-0">
             <div className="max-w-4xl mx-auto">
-                {/* Search bar */}
-                <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
-                    <Input
-                        placeholder="Search for users..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        className="flex-1"
-                        autoFocus
-                    />
-                    <Button
-                        onClick={handleSearch}
-                        className="w-full md:w-auto bg-primary text-white px-6 py-2 rounded-md hover:bg-primary/90 transition"
-                    >
-                        Search
-                    </Button>
+                {/* Sticky Search bar */}
+                <div className="bg-background/80 backdrop-blur-md px-6 py-6 md:px-0 md:py-8 mb-8 rounded-b-xl shadow">
+                    <div className="flex flex-col md:flex-row items-center gap-4">
+                        <Input
+                            placeholder="Search for users..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            className="border-2 border-primary/30 rounded-lg focus:border-primary transition h-12"
+                            autoFocus
+                        />
+                        <Button
+                            onClick={handleSearch}
+                            className="w-full md:w-auto bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 transition font-semibold shadow h-11"
+                        >
+                            Search
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Loading */}
@@ -134,8 +130,8 @@ const SearchPage = () => {
 
                 {/* Error */}
                 {isError && (
-                    <div className="text-center p-8 bg-red-50 border border-red-200 rounded-lg">
-                        <p className="text-red-500">
+                    <div className="text-center p-8 bg-red-50 border border-red-200 rounded-xl shadow">
+                        <p className="text-red-500 font-semibold">
                             Something went wrong. Please try again.
                         </p>
                     </div>
@@ -146,9 +142,9 @@ const SearchPage = () => {
                     !isError &&
                     debouncedQuery.length > 0 &&
                     allResults.length === 0 && (
-                        <div className="text-center p-12 bg-muted/30 border border-muted rounded-lg">
+                        <div className="text-center p-12 bg-muted/30 border border-muted rounded-xl shadow">
                             <User className="mx-auto h-12 w-12 text-muted-foreground/60 mb-4" />
-                            <p className="text-muted-foreground text-lg">
+                            <p className="text-muted-foreground text-lg font-semibold">
                                 No users found matching "{debouncedQuery}"
                             </p>
                             <p className="text-sm text-muted-foreground/80 mt-2">
@@ -159,7 +155,7 @@ const SearchPage = () => {
 
                 {/* Results */}
                 {allResults.length > 0 && (
-                    <div className="space-y-4 mb-8">
+                    <div className="flex flex-col gap-6 mb-8">
                         {allResults.map((user: UserType, index) => {
                             const isLast = index === allResults.length - 1;
                             return (
@@ -182,6 +178,8 @@ const SearchPage = () => {
         </div>
     );
 };
+
+export default SearchPage;
 
 const UserCard = ({ user }: { user: UserType }) => {
     return (
@@ -215,5 +213,3 @@ const UserCard = ({ user }: { user: UserType }) => {
         </Card>
     );
 };
-
-export default SearchPage;

@@ -24,7 +24,11 @@ const SideBar = () => {
     const { user, isAuthenticated, logout } = useAuth();
     const [open, setOpen] = useState(false);
 
-    if(!isAuthenticated) return;
+    const handleClose = () => {
+        setOpen(false);
+    }
+
+    if (!isAuthenticated) return;
 
     return (
         <>
@@ -51,32 +55,32 @@ const SideBar = () => {
             >
                 {/* Close Button (Only visible on small screens) */}
                 <div className="mt-20">
-                    <Button onClick={() => setOpen(false)} size="icon" variant="ghost" className='md:hidden'>
+                    <Button onClick={handleClose} size="icon" variant="ghost" className='md:hidden'>
                         <X size={20} />
                     </Button>
                 </div>
 
                 {/* Top Icons */}
                 <div className="flex flex-col mt-16 pb-16">
-                    <Link to="/post/add">
+                    <Link to="/post/add" onClick={handleClose}>
                         <Button className="w-10 h-10 rounded-full bg-primary mb-4 flex justify-center items-center">
                             <Plus size={20} />
                         </Button>
                     </Link>
 
-                    <Link to="/">
+                    <Link to="/" onClick={handleClose}>
                         <Button className="w-10 h-10 rounded-full bg-foreground/50 mb-4 flex justify-center items-center">
                             <Home size={20} />
                         </Button>
                     </Link>
 
-                    <Link to="/notifications">
+                    <Link to="/notifications" onClick={handleClose}>
                         <Button className="w-10 h-10 rounded-full bg-foreground/50 mb-4 flex justify-center items-center">
                             <Bell size={20} />
                         </Button>
                     </Link>
 
-                    <Link to="/search">
+                    <Link to="/search" onClick={handleClose}>
                         <Button className="w-10 h-10 rounded-full bg-foreground/50 mb-4 flex justify-center items-center">
                             <Search size={20} />
                         </Button>
@@ -101,7 +105,7 @@ const SideBar = () => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start">
-                                <Link to="/profile">
+                                <Link to="/profile" onClick={handleClose}>
                                     <DropdownMenuItem>
                                         <UserRound className="mr-2" />
                                         Profile

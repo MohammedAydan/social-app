@@ -5,6 +5,7 @@ import { BadgeCheck } from "lucide-react";
 import UpdateUserDialog from "./update-user-dialog";
 
 import SettingsDialog from "./settings-dialog";
+import ManageUserImage from "./manage-user-image";
 
 interface ProfileHeaderProps {
     user: UserType;
@@ -13,11 +14,18 @@ interface ProfileHeaderProps {
 
 const ProfileHeader = ({ user, authenticatedUser = false }: ProfileHeaderProps) => {
     return (
-        <div className="flex flex-col w-full max-w-xl">
-            <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-8 mt-6">
-                <UserAvatar url={user.profileImageUrl} username={user.userName} size={160} />
+        <div className="flex flex-col w-full max-w-xl justify-center">
+            <div className="w-full flex flex-col md:flex-row items-center justify-center md:items-start gap-8 mt-6">
+                {/* // */}
+                {!authenticatedUser && (
+                    <UserAvatar url={user.profileImageUrl} username={user.userName} size={160} />
+                )}
+                {authenticatedUser && (
+                    <ManageUserImage user={user} url={user.profileImageUrl} username={user.userName} size={160} />
+                )}
+                {/* // */}
                 <div className="flex flex-col gap-4">
-                    <h2 className="text-3xl font-bold flex items-center gap-2">
+                    <h2 className="text-3xl font-bold flex items-center gap-2 justify-center md:justify-start">
                         {user?.userName} {user?.isVerified && (<BadgeCheck className="text-primary" size={20} />)}
                     </h2>
                     <div className="flex gap-8 text-muted-foreground">
@@ -33,7 +41,7 @@ const ProfileHeader = ({ user, authenticatedUser = false }: ProfileHeaderProps) 
                             isFollowAccepted={user.isFollowerAccepted}
                         />}
                         {authenticatedUser && (
-                            <div className="flex gap-2">
+                            <div className="flex items-center justify-center gap-2 w-full">
                                 <UpdateUserDialog />
                                 <SettingsDialog />
                             </div>
@@ -42,7 +50,7 @@ const ProfileHeader = ({ user, authenticatedUser = false }: ProfileHeaderProps) 
                 </div>
             </div>
             {user.bio && (
-                <div className="py-5">
+                <div className="py-5 px-6">
                     <p className="text-sm text-foreground/80 max-w-xl">{user.bio}</p>
                 </div>
             )}

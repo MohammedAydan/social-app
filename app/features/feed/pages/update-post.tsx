@@ -153,6 +153,7 @@ export default function UpdatePostDialog() {
                         media={media}
                         setMedia={setMedia}
                         isPending={isPending}
+                        isUpdate={true}
                     />
                 </div>
 

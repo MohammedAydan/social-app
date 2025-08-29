@@ -9,7 +9,7 @@ const ProfilePosts = ({ userId, authenticatedUser = false }: { userId: string, a
                 <GalleryVerticalEnd className="w-6 h-6 text-muted-foreground" />
                 <h3 className="text-2xl font-medium">Posts</h3>
             </div>
-            
+
             {authenticatedUser ? <MyUserPosts /> : <UserPosts userId={userId} />}
 
         </section>

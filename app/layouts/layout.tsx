@@ -5,6 +5,7 @@ import Header from '~/shared/components/header'
 import AuthProviderAndLayout from '~/features/auth/components/auth-provider'
 import { Toaster } from 'sonner'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { MediaProvider } from '~/features/feed/hooks/use-manage-media'
 
 export const queryClient = new QueryClient({
     defaultOptions: {
@@ -22,7 +23,9 @@ const GlobalLayout = ({ children }: { children: ReactNode }) => {
                     <AuthProviderAndLayout>
                         <Header />
                         <SideBar />
-                        {children}
+                        <MediaProvider>
+                            {children}
+                        </MediaProvider>
                     </AuthProviderAndLayout>
                     <Toaster theme={useTheme().theme} />
                 </ThemeProvider>

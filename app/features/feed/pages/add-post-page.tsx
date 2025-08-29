@@ -10,6 +10,7 @@ import { Button } from '~/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import FullMDXEditor from './_editor';
 import AddPostForm from '../components/add-post-form';
+import { useManageMedia } from '../hooks/use-manage-media';
 
 function VisibilitySelector({
     visibility,
@@ -44,8 +45,9 @@ export default function AddPostPage() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [visibility, setVisibility] = useState<'public' | 'private'>('public');
-    const [media, setMedia] = useState<CreateMediaRequest[]>([]);
     const navigate = useNavigate();
+    const { media, setMedia, isLoading } = useManageMedia();
+
 
     const { mutate, isPending } = useMutation({
         mutationFn: (post: CreatePostType) => createPost(post),
@@ -71,6 +73,12 @@ export default function AddPostPage() {
     };
 
     const handleSubmit = () => {
+        if (isLoading) {
+            toast.error('Error', {
+                description: 'Please wait for media to finish uploading',
+            });
+            return;
+        }
         const post: CreatePostType = {
             title,
             content,
@@ -84,7 +92,7 @@ export default function AddPostPage() {
         <main className="p-4 max-w-5xl mx-auto mt-16">
             <header className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">Add Post</h1>
-                <Button onClick={handleSubmit} disabled={isPending || (title.length === 0 && content.length === 0)}>
+                <Button onClick={handleSubmit} disabled={(isLoading || isPending) || (title.length === 0 && content.length === 0 && media.length === 0)}>
                     {isPending ? 'Creating...' : 'Create Post'}
                 </Button>
             </header>
@@ -113,6 +121,8 @@ export default function AddPostPage() {
                         media={media}
                         setMedia={setMedia}
                         isPending={isPending}
+                        isUpdate={false}
+                    // handleUploadAndAddMedia={handleUploadAndAddMedia}
                     />
                 </TabsContent>
 

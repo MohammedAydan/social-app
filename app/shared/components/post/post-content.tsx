@@ -201,10 +201,12 @@ const PostContent: FC<{ post?: PostType }> = ({ post: _post }) => {
     };
 
     return (
-        <div className="space-y-4 p-4">
+        <div
+        // className="space-y-4 p-4"
+        >
             {/* Title */}
             {title && (
-                <div className="font-semibold text-lg text-foreground leading-tight break-words">
+                <div className="space-y-2 font-semibold text-lg text-foreground leading-tight break-words">
                     <Markdown {...markdownPlugins} components={markdownComponents}>
                         {title}
                     </Markdown>
@@ -213,7 +215,7 @@ const PostContent: FC<{ post?: PostType }> = ({ post: _post }) => {
 
             {/* Content */}
             {content && (
-                <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm dark:prose-invert max-w-none break-words">
+                <div className="space-y-2 text-sm text-muted-foreground leading-relaxed prose prose-sm dark:prose-invert max-w-none break-words">
                     <Markdown {...markdownPlugins} components={markdownComponents}>
                         {displayedContent}
                     </Markdown>
@@ -229,9 +231,10 @@ const PostContent: FC<{ post?: PostType }> = ({ post: _post }) => {
                 </div>
             )}
 
+
             {/* Media */}
             {Array.isArray(post?.media) && post?.media.length > 0 && (
-                <div className="pt-2">
+                <div className="space-y-2 pt-2">
                     <MediaScrollArea media={post?.media} />
                 </div>
             )}

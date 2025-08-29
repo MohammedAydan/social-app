@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
-import { X, Download, FileText, ExternalLink, Play, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useCallback, useMemo } from "react";
+import { X, Download, FileText, ExternalLink, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Media } from "~/shared/types/post-types";
 import { cn } from "~/lib/utils";
@@ -88,45 +88,6 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
         }
     }, [media]);
 
-    // Keyboard navigation
-    const handleKeyDown = useCallback((e: KeyboardEvent) => {
-        if (!isDialogOpen) return;
-
-        switch (e.key) {
-            case 'ArrowLeft':
-                e.preventDefault();
-                const prevIndex = currentIndex > 0 ? currentIndex - 1 : media.length - 1;
-                navigateToMedia(prevIndex);
-                break;
-            case 'ArrowRight':
-                e.preventDefault();
-                const nextIndex = currentIndex < media.length - 1 ? currentIndex + 1 : 0;
-                navigateToMedia(nextIndex);
-                break;
-            case 'Escape':
-                e.preventDefault();
-                handleDialogClose();
-                break;
-        }
-    }, [isDialogOpen, currentIndex, media.length, navigateToMedia, handleDialogClose]);
-
-    // Navigation functions
-    const navigatePrev = useCallback(() => {
-        const prevIndex = currentIndex > 0 ? currentIndex - 1 : media.length - 1;
-        navigateToMedia(prevIndex);
-    }, [currentIndex, media.length, navigateToMedia]);
-
-    const navigateNext = useCallback(() => {
-        const nextIndex = currentIndex < media.length - 1 ? currentIndex + 1 : 0;
-        navigateToMedia(nextIndex);
-    }, [currentIndex, media.length, navigateToMedia]);
-
-    // Add keyboard event listeners
-    useEffect(() => {
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [handleKeyDown]);
-
     // Thumbnail renderer for grid view
     const renderThumbnail = useCallback((mediaItem: Media) => {
         switch (mediaItem.type) {
@@ -147,7 +108,6 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
             case "video":
                 return (
                     <div className="relative group w-full h-full overflow-hidden rounded-xl">
-                        {/* Poster Image */}
                         <img
                             src={mediaItem.thumbnailUrl || mediaItem.url}
                             alt={mediaItem.name}
@@ -155,22 +115,17 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
                             loading="lazy"
                             draggable={false}
                         />
-                        {/* Play Button Overlay */}
                         <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors duration-300">
-                            <div className="bg-background/90 dark:bg-background/90 rounded-full p-3 backdrop-blur-sm shadow-lg border border-border/20">
-                                <Play className="h-6 w-6 text-foreground ml-1" />
+                            <div className="bg-white/90 rounded-full p-3 backdrop-blur-sm shadow-lg">
+                                <Play className="h-6 w-6 text-black ml-1" />
                             </div>
-                        </div>
-                        {/* Duration Badge */}
-                        <div className="absolute bottom-2 right-2 bg-background/80 dark:bg-background/80 text-foreground px-2 py-1 rounded text-xs font-medium backdrop-blur-sm">
-                            Video
                         </div>
                     </div>
                 );
 
             case "audio":
                 return (
-                    <div className="w-full h-full bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/50 dark:to-pink-950/50 rounded-xl flex flex-col items-center justify-center p-4 border border-border/50">
+                    <div className="w-full h-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-800 dark:to-pink-800 rounded-xl flex flex-col items-center justify-center p-4">
                         <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-4 mb-3 shadow-lg">
                             <Play className="h-8 w-8 text-white" />
                         </div>
@@ -183,7 +138,7 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
 
             case "file":
                 return (
-                    <div className="w-full h-full bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50 rounded-xl flex flex-col items-center justify-center p-4 border border-border/50">
+                    <div className="w-full h-full bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-800 dark:to-cyan-800 rounded-xl flex flex-col items-center justify-center p-4">
                         <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full p-4 mb-3 shadow-lg">
                             <FileText className="h-8 w-8 text-white" />
                         </div>
@@ -196,9 +151,9 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
 
             default:
                 return (
-                    <div className="w-full h-full bg-gradient-to-br from-muted/50 to-muted/30 dark:from-muted/30 dark:to-muted/20 rounded-xl flex flex-col items-center justify-center p-4 border border-border/50">
-                        <div className="bg-gradient-to-r from-muted-foreground/50 to-muted-foreground/30 rounded-full p-4 mb-3">
-                            <X className="h-8 w-8 text-muted-foreground" />
+                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-slate-100 dark:from-gray-800 dark:to-slate-800 rounded-xl flex flex-col items-center justify-center p-4">
+                        <div className="bg-gradient-to-r from-gray-500 to-slate-500 rounded-full p-4 mb-3">
+                            <X className="h-8 w-8 text-white" />
                         </div>
                         <span className="text-sm text-muted-foreground">Unsupported</span>
                     </div>
@@ -215,86 +170,77 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
                         src={mediaItem.url}
                         alt={mediaItem.name}
                         className="w-full h-full"
-                        // onDownload={() => handleDownload(mediaItem)}
+                        onDownload={() => handleDownload(mediaItem)}
                     />
                 );
 
             case "video":
                 return (
-                    <div className="w-full h-full flex items-center justify-center">
-                        <CustomVideoPlayer
-                            src={mediaItem.url}
-                            poster={mediaItem.thumbnailUrl}
-                            className="w-full h-full max-w-[90vw] max-h-[70vh] rounded-lg"
-                            controls={true}
-                            autoPlay={false}
-                        />
-                    </div>
+                    <CustomVideoPlayer
+                        src={mediaItem.url}
+                        poster={mediaItem.thumbnailUrl}
+                        className="w-full h-full max-h-[70vh]"
+                        controls={true}
+                    />
                 );
 
             case "audio":
                 return (
-                    <div className="w-full h-full flex items-center justify-center">
-                        <CustomAudioPlayer
-                            src={mediaItem.url}
-                            title={mediaItem.name}
-                            className="w-full max-w-md mx-auto"
-                        />
-                    </div>
+                    <CustomAudioPlayer
+                        src={mediaItem.url}
+                        title={mediaItem.name}
+                        className="w-full max-w-md mx-auto"
+                    />
                 );
 
             case "file":
                 return (
-                    <div className="w-full h-full flex items-center justify-center">
-                        <div className="w-full max-w-md mx-auto bg-card rounded-xl p-8 text-center border border-border">
-                            <div className="bg-primary/10 rounded-full p-6 mb-6 mx-auto w-fit">
-                                <FileText className="h-12 w-12 text-primary" />
-                            </div>
-                            <h3 className="text-lg font-semibold mb-2 text-foreground">
-                                {mediaItem.name}
-                            </h3>
-                            <p className="text-muted-foreground mb-6 text-sm">
-                                Document File
-                            </p>
-                            <div className="flex gap-3 justify-center">
-                                <Button asChild>
-                                    <a
-                                        href={mediaItem.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-2"
-                                    >
-                                        <ExternalLink className="h-4 w-4" />
-                                        Open File
-                                    </a>
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => handleDownload(mediaItem)}
+                    <div className="w-full max-w-md mx-auto bg-card rounded-xl p-8 text-center border">
+                        <div className="bg-primary/10 rounded-full p-6 mb-6 mx-auto w-fit">
+                            <FileText className="h-12 w-12 text-primary" />
+                        </div>
+                        <h3 className="text-lg font-semibold mb-2 text-foreground">
+                            {mediaItem.name}
+                        </h3>
+                        <p className="text-muted-foreground mb-6 text-sm">
+                            Document File
+                        </p>
+                        <div className="flex gap-3 justify-center">
+                            <Button asChild>
+                                <a
+                                    href={mediaItem.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="flex items-center gap-2"
                                 >
-                                    <Download className="h-4 w-4" />
-                                    Download
-                                </Button>
-                            </div>
+                                    <ExternalLink className="h-4 w-4" />
+                                    Open File
+                                </a>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => handleDownload(mediaItem)}
+                                className="flex items-center gap-2"
+                            >
+                                <Download className="h-4 w-4" />
+                                Download
+                            </Button>
                         </div>
                     </div>
                 );
 
             default:
                 return (
-                    <div className="w-full h-full flex items-center justify-center">
-                        <div className="w-full max-w-md mx-auto bg-card rounded-xl p-8 text-center border border-border">
-                            <div className="bg-muted rounded-full p-6 mb-6 mx-auto w-fit">
-                                <X className="h-12 w-12 text-muted-foreground" />
-                            </div>
-                            <h3 className="text-lg font-semibold mb-2 text-foreground">
-                                Unsupported Media
-                            </h3>
-                            <p className="text-muted-foreground text-sm">
-                                This media type is not supported
-                            </p>
+                    <div className="w-full max-w-md mx-auto bg-card rounded-xl p-8 text-center border">
+                        <div className="bg-muted rounded-full p-6 mb-6 mx-auto w-fit">
+                            <X className="h-12 w-12 text-muted-foreground" />
                         </div>
+                        <h3 className="text-lg font-semibold mb-2 text-foreground">
+                            Unsupported Media
+                        </h3>
+                        <p className="text-muted-foreground text-sm">
+                            This media type is not supported
+                        </p>
                     </div>
                 );
         }
@@ -307,14 +253,14 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
                 className={cn(
                     "grid gap-2 sm:gap-3 w-full rounded-2xl overflow-hidden",
                     gridConfig.cols,
-                    "bg-muted/10 dark:bg-muted/5 border border-border/30"
+                    "bg-muted/20"
                 )}
             >
                 {media.slice(0, 4).map((mediaItem, index) => {
                     const isLastItem = index === 3 && media.length > 4;
                     const remainingCount = media.length - 4;
                     const config = MEDIA_CONFIG[mediaItem.type] || MEDIA_CONFIG.file;
-
+                    
                     return (
                         <motion.div
                             key={mediaItem.id}
@@ -330,7 +276,7 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
                             <div className="w-full h-full">
                                 {renderThumbnail(mediaItem)}
                             </div>
-
+                            
                             {/* Overlay for more items */}
                             {isLastItem && remainingCount > 0 && (
                                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-xl backdrop-blur-sm">
@@ -340,10 +286,10 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
                                     </div>
                                 </div>
                             )}
-
+                            
                             {/* Media type indicator */}
                             <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <div className="bg-background/90 dark:bg-background/90 text-foreground px-2 py-1 rounded-lg text-xs font-medium backdrop-blur-sm border border-border/30 flex items-center gap-1">
+                                <div className="bg-black/80 text-white px-2 py-1 rounded-lg text-xs font-medium backdrop-blur-sm flex items-center gap-1">
                                     <span>{config.icon}</span>
                                     <span>{config.label}</span>
                                 </div>
@@ -356,7 +302,7 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
             {/* Media count indicator */}
             {isMultipleMedia && (
                 <div className="flex items-center justify-center mt-4">
-                    <div className="flex items-center space-x-2 bg-background/80 dark:bg-background/80 border border-border/50 rounded-full px-4 py-2 backdrop-blur-sm">
+                    <div className="flex items-center space-x-2 bg-muted/50 rounded-full px-4 py-2">
                         <div className="flex space-x-1">
                             {Array.from({ length: Math.min(media.length, 5) }).map((_, i) => (
                                 <div
@@ -385,60 +331,41 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
                 {isDialogOpen && selectedMedia && (
                     <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
                         <DialogContent
-                            showCloseButton={false}
                             className={cn(
-                                "p-0 bg-background/95 dark:bg-background/95 backdrop-blur-md border border-border",
-                                "w-[90%] max-w-none h-[95vh] max-h-none md:min-w-[750px] lg:min-w-[950px]",
-                                "flex flex-col overflow-hidden rounded-2xl shadow-2xl",
-                                "max-w-full w-full min-h-[50vh] sm:min-h-[70vh] md:min-h-[80vh]",
+                                "p-0 bg-black/95 backdrop-blur-md border-0",
+                                "max-w-[95vw] max-h-[95vh] w-auto h-auto",
+                                "sm:max-w-[90vw] sm:max-h-[90vh]",
+                                "flex flex-col overflow-hidden rounded-2xl"
                             )}
                         >
                             {/* Header */}
                             <motion.div
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="flex items-center justify-between p-4 bg-background/80 dark:bg-background/80 backdrop-blur-sm border-b border-border"
+                                className="flex items-center justify-between p-4 bg-black/50 backdrop-blur-sm border-b border-white/10"
                             >
                                 <div className="flex items-center space-x-3">
-                                    <div className="text-foreground text-sm font-medium max-w-xs truncate">
+                                    <div className="text-white text-sm font-medium max-w-xs truncate">
                                         {selectedMedia.name}
                                     </div>
-                                    <div className="text-muted-foreground text-xs uppercase tracking-wide">
+                                    <div className="text-white/60 text-xs uppercase tracking-wide">
                                         {MEDIA_CONFIG[selectedMedia.type]?.label || 'Unknown'}
                                     </div>
-                                    {isMultipleMedia && (
-                                        <div className="text-muted-foreground text-xs">
-                                            {currentIndex + 1} / {media.length}
-                                        </div>
-                                    )}
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    {/* Navigation arrows for multiple media */}
-                                    {isMultipleMedia && (
-                                        <>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                                                onClick={navigatePrev}
-                                            >
-                                                <ChevronLeft className="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                                                onClick={navigateNext}
-                                            >
-                                                <ChevronRight className="h-4 w-4" />
-                                            </Button>
-                                        </>
-                                    )}
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="text-white/70 hover:text-white hover:bg-white/10"
+                                        onClick={() => handleDownload(selectedMedia)}
+                                    >
+                                        <Download className="h-4 w-4" />
+                                    </Button>
                                     <DialogClose asChild>
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                            className="text-white/70 hover:text-white hover:bg-white/10"
                                         >
                                             <X className="h-4 w-4" />
                                         </Button>
@@ -453,7 +380,7 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ duration: 0.2 }}
-                                className="flex-1 flex items-center justify-center p-6 min-h-0 bg-muted/5 dark:bg-muted/5"
+                                className="flex-1 flex items-center justify-center p-6 min-h-0"
                             >
                                 <div className="w-full h-full flex items-center justify-center max-w-full max-h-full">
                                     {renderFullMedia(selectedMedia)}
@@ -465,19 +392,19 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="flex items-center justify-center p-4 bg-background/80 dark:bg-background/80 backdrop-blur-sm border-t border-border"
+                                    className="flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm border-t border-white/10"
                                 >
-                                    <div className="flex items-center space-x-2 max-w-full overflow-x-auto pb-2">
+                                    <div className="flex items-center space-x-2 max-w-full overflow-x-auto">
                                         {media.map((mediaItem, index) => (
                                             <button
                                                 key={mediaItem.id}
                                                 onClick={() => navigateToMedia(index)}
                                                 className={cn(
                                                     "flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden transition-all duration-200",
-                                                    "border-2",
+                                                    "border-2 hover:scale-110",
                                                     selectedMedia.id === mediaItem.id
-                                                        ? "border-primary shadow-lg ring-2 ring-primary/30"
-                                                        : "border-border hover:border-primary/50"
+                                                        ? "border-white scale-110 shadow-lg"
+                                                        : "border-white/30 hover:border-white/60"
                                                 )}
                                             >
                                                 <img

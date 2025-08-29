@@ -75,7 +75,7 @@ const UpdateUserDialog = ({ triggerAs = 'button' }: UpdateUserDialogProps) => {
                         Edit Profile
                     </DropdownMenuItem>
                 ) : (
-                    <Button variant="outline" className="w-full">
+                    <Button variant="outline" className="w-[85%]">
                         <Pencil className="mr-2 h-4 w-4" />
                         Edit Profile
                     </Button>
