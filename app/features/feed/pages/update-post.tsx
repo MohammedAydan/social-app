@@ -107,7 +107,7 @@ export default function UpdatePostDialog() {
             title,
             content,
             visibility,
-            media,
+            media: [],
         };
         mutate(updatedPost);
     };

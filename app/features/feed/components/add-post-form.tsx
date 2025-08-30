@@ -42,6 +42,7 @@ const AddPostForm: React.FC<AddPostFormProps> = ({
     getMediaType,
     selectedMedia,
     removeMedia,
+    progress,
   } = useManageMedia();
 
   const addMedia = () => {
@@ -99,26 +100,32 @@ const AddPostForm: React.FC<AddPostFormProps> = ({
           <Label>Media</Label>
           <Label
             htmlFor="select-media-item"
-            className={`w-full my-3 rounded-2xl bg-primary flex items-center justify-center text-white py-2 cursor-pointer h-10 ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary/90'}`}
-          >+ Add Media</Label>
+            className={`w-full my-3 rounded-lg bg-primary hover:bg-primary/90 active:bg-primary/80 flex items-center justify-center text-white py-3 cursor-pointer transition-colors duration-200 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            + Add Media
+          </Label>
           <Input id="select-media-item" type="file" className="hidden" disabled={isLoading} onChange={isLoading ? () => { } : handleUploadAndAddMedia} />
           {isLoading && (
             <div className="space-y-4">
-              <div className="border p-3 rounded-md space-y-2">
-                <div className="flex gap-2">
-                  <div className="w-full h-10 rounded flex items-center justify-between">
-                    <div className="w-fit h-10 rounded flex items-center justify-between">
-                      <div className="">
-                        <div className="animate-spin rounded-full h-7 w-7 border-4 border-primary border-b-transparent mx-3"></div>
-                      </div>
-                      <div className="px-3 text-sm">
-                        {selectedMedia ? selectedMedia.name : "No file selected"}
-                      </div>
-                    </div>
-
-                    <div className="px-3">
-                      {selectedMedia && getMediaType(selectedMedia).toUpperCase()}
-                    </div>
+              <div className="border border-foreground/15 p-4 rounded-lg flex flex-col items-center justify-center space-y-3">
+                <div className="flex items-center gap-3 w-full">
+                  <div className="animate-spin rounded-full h-6 w-6 border-4 border-primary border-b-transparent"></div>
+                  <div className="text-sm font-medium">
+                    {selectedMedia ? selectedMedia.name : "No file selected"}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {selectedMedia && getMediaType(selectedMedia).toUpperCase()}
+                  </div>
+                </div>
+                <div className="w-full">
+                  <div className="p-2 rounded-2xl">
+                    Uploading... {progress}%
+                  </div>
+                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-2 bg-primary transition-all duration-300 ease-in-out"
+                      style={{ width: `${progress}%` }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -126,7 +133,7 @@ const AddPostForm: React.FC<AddPostFormProps> = ({
           )}
 
           {media.length === 0 && !isLoading && (
-            <div className="w-full text-center text-sm text-muted-foreground">
+            <div className="w-full text-center text-sm text-muted-foreground py-4">
               No media added. Click "Add Media" to upload files.
             </div>
           )}
