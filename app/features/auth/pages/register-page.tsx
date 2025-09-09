@@ -139,7 +139,7 @@ const Register = () => {
                                 <FormItem>
                                     <FormLabel className="text-foreground">Gender</FormLabel>
                                     <FormControl>
-                                        <Select {...field}>
+                                        <Select value={field.value} onValueChange={field.onChange}>
                                             <SelectTrigger
                                                 className="w-full py-6 border-input bg-background text-foreground focus:ring-2 focus:ring-primary"
                                             >
