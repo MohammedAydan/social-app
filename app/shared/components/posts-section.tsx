@@ -4,7 +4,26 @@ import LoadingPost from './post/loading-post';
 import PostCard from './post/post-card';
 
 const PostsSection = () => {
-    const { posts, isLoading, isLoadingMore, error } = useFeed();
+    const { posts, isLoading, isLoadingMore, error, hasMore, fetchNext } = useFeed();
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollTop = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+
+            if (
+                scrollTop + windowHeight >= documentHeight - 100 &&
+                !isLoadingMore &&
+                hasMore
+            ) {
+                fetchNext();
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [fetchNext, isLoadingMore, hasMore]);
 
     if (isLoading) {
         return (
