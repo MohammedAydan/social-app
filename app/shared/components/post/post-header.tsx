@@ -27,10 +27,12 @@ const PostHeader = ({ isPostSharing = false, isPostPage = false }: PostHeaderPro
         ? formatRelativeTime(post.createdAt)
         : 'Unknown Date';
 
-    const userName = post?.user?.userName || 'Unknown User';
-    const profileImageUrl = post?.user?.profileImageUrl || '';
-    const isVerified = post?.user?.isVerified || false;
-    const userId = post?.userId;
+    const userInfo = isPostSharing ? post?.parentPost?.user : post?.user;
+    const userId = isPostSharing ? post?.parentPost?.userId : post?.userId;
+
+    const userName = userInfo?.userName || 'Unknown User';
+    const profileImageUrl = userInfo?.profileImageUrl || '';
+    const isVerified = userInfo?.isVerified || false;
 
     return (
         <div className="flex justify-between items-center gap-3">
@@ -40,7 +42,7 @@ const PostHeader = ({ isPostSharing = false, isPostPage = false }: PostHeaderPro
 
                 <div className="flex flex-col">
                     <h2 className="font-medium flex items-center gap-2">
-                        {post?.user?.userName} {post?.user?.isVerified && (<BadgeCheck className="text-primary" size={20} />)}
+                        {userName} {isVerified && (<BadgeCheck className="text-primary" size={20} />)}
                     </h2>
                     <p className="text-xs text-foreground/50">{formattedDate}</p>
                 </div>
