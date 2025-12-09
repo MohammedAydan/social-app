@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.matech.social",
+      "sha256_cert_fingerprints": [
+        "71:E8:B7:91:17:9D:2D:87:F8:5C:A8:CC:6F:89:1E:28:4C:8D:D8:60:AF:A7:BA:1B:24:23:DA:1F:39:30:A2:99",
+        "BF:CE:48:AC:EE:AF:C2:5A:7C:25:A2:3F:FE:24:41:EC:69:74:7B:72:11:3C:60:80:22:2B:7F:EA:B6:14:FC:0B"
+      ]
+    }
+  }
+]
