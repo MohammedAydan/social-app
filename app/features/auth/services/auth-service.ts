@@ -1,7 +1,5 @@
-import {
-    registerUser,
-    signInUser,
-} from "~/shared/api";
+import { ApiClientError, type ApiEnvelope } from "~/sdk/api-client";
+import { authApi } from "~/sdk/endpoints";
 import type { ApiResponse } from "~/shared/api/api.response";
 import type { AuthResponseType } from "~/shared/types/auth-response-type";
 import type { CreateUserType } from "~/shared/types/create-user-type";
@@ -13,6 +11,15 @@ import {
     removeRefreshToken,
 } from "~/shared/utils/token";
 
+function toLegacyResponse(data: AuthResponseType, message = "Success"): ApiResponse<AuthResponseType> {
+    return { success: true, message, data, errors: null };
+}
+
+function toErrorResponse(error: unknown): ApiResponse<AuthResponseType> {
+    const clientError = error instanceof ApiClientError ? error : new Error("Authentication request failed");
+    return { success: false, message: clientError.message, data: undefined, errors: clientError instanceof ApiClientError ? clientError.errors : clientError };
+}
+
 export interface IAuthService {
     signIn(data: SignInType): Promise<ApiResponse<AuthResponseType>>;
     register(data: CreateUserType): Promise<ApiResponse<AuthResponseType>>;
@@ -21,25 +28,31 @@ export interface IAuthService {
 
 export class AuthService implements IAuthService {
     async signIn(signInData: SignInType): Promise<ApiResponse<AuthResponseType>> {
-        const response = await signInUser(signInData);
-
-        if (response.success && response.data?.accessToken) {
-            saveAccessToken(response.data.accessToken);
-            saveRefreshToken(response.data.refreshToken);
+        try {
+            const data = await authApi.signIn(signInData);
+            const response = toLegacyResponse({ ...data, isSuccess: true });
+            if (response.data?.accessToken) {
+                saveAccessToken(response.data.accessToken);
+                saveRefreshToken(response.data.refreshToken);
+            }
+            return response;
+        } catch (error) {
+            return toErrorResponse(error);
         }
-
-        return response;
     }
 
     async register(registerData: CreateUserType): Promise<ApiResponse<AuthResponseType>> {
-        const response = await registerUser(registerData);
-
-        if (response.success && response.data?.accessToken) {
-            saveAccessToken(response.data.accessToken);
-            saveRefreshToken(response.data.refreshToken);
+        try {
+            const data = await authApi.register<AuthResponseType>(registerData);
+            const response = toLegacyResponse({ ...data, isSuccess: true });
+            if (response.data?.accessToken) {
+                saveAccessToken(response.data.accessToken);
+                saveRefreshToken(response.data.refreshToken);
+            }
+            return response;
+        } catch (error) {
+            return toErrorResponse(error);
         }
-
-        return response;
     }
 
     async signOut(): Promise<void> {
