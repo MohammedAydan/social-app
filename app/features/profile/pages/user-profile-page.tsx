@@ -1,5 +1,7 @@
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "~/features/auth/hooks/use-auth";
 import ProfilePage from "./profile-page";
 import { getUserProfile } from "~/shared/api";
@@ -9,8 +11,7 @@ import { Separator } from "~/components/ui/separator";
 import ProfilePosts from "../components/profile-posts";
 import LoadingProfileHeader from "../components/loading-profile";
 
-const UserProfilePage = () => {
-  const { userId } = useParams();
+const UserProfilePage = ({ userId }: { userId: string }) => {
   const router = useRouter();
   const { user: authUser } = useAuth();
   const profileId = Array.isArray(userId) ? userId[0] : userId;

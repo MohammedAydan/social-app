@@ -1,3 +1,5 @@
+"use client";
+
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 import { useAuth } from '~/features/auth/hooks/use-auth';

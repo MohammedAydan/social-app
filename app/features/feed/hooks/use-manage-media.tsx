@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext, useState } from "react";
 import { uploadAsset } from "~/shared/api/api.storage";
 import type { CreateMediaRequest } from "~/shared/types/create-post-type";

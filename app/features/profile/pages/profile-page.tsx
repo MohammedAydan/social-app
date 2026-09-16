@@ -1,3 +1,5 @@
+"use client";
+
 import { useAuth } from "~/features/auth/hooks/use-auth";
 import LoadingProfileHeader from "../components/loading-profile";
 import ProfileHeader from "../components/profile-header";
