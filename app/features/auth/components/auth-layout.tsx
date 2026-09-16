@@ -1,7 +1,9 @@
+"use client";
+
 import Loading from "~/shared/components/loading";
 import { useAuth } from "../hooks/use-auth";
 import { useEffect, type ReactNode } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { usePathname, useRouter } from "next/navigation";
 
 interface InitialLoadingProps {
     children: ReactNode;
@@ -9,22 +11,20 @@ interface InitialLoadingProps {
 
 const AuthLayout = ({ children }: InitialLoadingProps) => {
     const { initialLoading, isAuthenticated } = useAuth();
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const pathname = location.pathname;
+    const router = useRouter();
+    const pathname = usePathname();
     const publicRoutes = ["/sign-in", "/register", "/forgot-password", "/reset-password"];
     const isPublicPage = publicRoutes.includes(pathname);
 
     useEffect(() => {
         if (!initialLoading) {
             if (!isAuthenticated && !isPublicPage) {
-                navigate("/sign-in", { replace: true });
+                router.replace("/sign-in");
             } else if (isAuthenticated && isPublicPage) {
-                navigate("/", { replace: true });
+                router.replace("/");
             }
         }
-    }, [initialLoading, isAuthenticated, pathname, navigate, isPublicPage]);
+    }, [initialLoading, isAuthenticated, pathname, router, isPublicPage]);
 
     if (initialLoading || (!isAuthenticated && !isPublicPage)) {
         return (

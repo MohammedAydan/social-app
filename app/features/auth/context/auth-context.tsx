@@ -9,7 +9,7 @@ import React, {
 import type { ReactNode } from "react";
 import type { CreateUserType } from "~/shared/types/create-user-type";
 import type { UserType } from "~/shared/types/user-type";
-import { getCurrentUser } from "~/shared/api/api.user";
+import { authApi } from "~/sdk/endpoints";
 import {
     getAccessToken,
     removeAccessToken,
@@ -108,8 +108,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
             const token = getAccessToken();
             if (!token) throw new Error("No token found.");
 
-            const userData = await getCurrentUser();
-            const currentUser = userData?.data;
+            const currentUser = await authApi.currentUser<UserType>();
 
             if (!currentUser) throw new Error("No user data found.");
 
