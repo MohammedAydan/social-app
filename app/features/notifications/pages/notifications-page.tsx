@@ -36,13 +36,9 @@ const NotificationsPage = () => {
 
             const response = await getUserNotifications(user.id, pageParam, PAGE_SIZE);
 
-            if (!response.success) {
-                throw new Error('Failed to load notifications');
-            }
-
             return {
-                data: response.data || [],
-                nextPage: response.data?.length === PAGE_SIZE ? pageParam + 1 : undefined
+                data: response,
+                nextPage: response.length === PAGE_SIZE ? pageParam + 1 : undefined
             };
         },
         getNextPageParam: (lastPage) => lastPage.nextPage,

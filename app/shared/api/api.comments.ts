@@ -2,34 +2,29 @@
 import type { CreateCommentType } from "../types/create-comment-type";
 import type { CreateReplyCommentType } from "../types/create-reply-comment-type";
 import type { UpdateCommentType } from "../types/update-comment-type";
-import api from "./axios";
-import { handleRequest } from "./api.handle-request";
+import { apiClient } from "~/sdk/api-client";
 import type { CommentType } from "../types/comment-type";
 
 export const createComment = (payload: CreateCommentType) =>
-    handleRequest(api.post("/api/Comments", payload));
+    apiClient.post("/api/Comments", payload);
 
 export const createReplyComment = (payload: CreateReplyCommentType) =>
-    handleRequest(api.post("/api/Comments/reply", payload));
+    apiClient.post("/api/Comments/reply", payload);
 
 export const updateComment = (id: string, payload: UpdateCommentType) =>
-    handleRequest(api.put(`/api/Comments/${id}`, payload));
+    apiClient.put(`/api/Comments/${encodeURIComponent(id)}`, payload);
 
 export const deleteComment = (id: string) =>
-    handleRequest(api.delete(`/api/Comments/${id}`));
+    apiClient.delete(`/api/Comments/${encodeURIComponent(id)}`);
 
 export const deleteReplyComment = (id: string) =>
-    handleRequest(api.delete(`/api/Comments/reply/${id}`));
+    apiClient.delete(`/api/Comments/reply/${encodeURIComponent(id)}`);
 
 export const getComment = (id: string) =>
-    handleRequest(api.get(`/api/Comments/${id}`));
+    apiClient.get(`/api/Comments/${encodeURIComponent(id)}`);
 
 export const getPostComments = (postId: string, page = 1, limit = 10) =>
-    handleRequest<CommentType[]>(
-        api.get(`/api/Comments/post/${postId}`, {
-            params: { page, limit },
-        })
-    );
+    apiClient.get<CommentType[]>(`/api/Comments/post/${encodeURIComponent(postId)}`, { page, limit });
 
 export const getCommentReplies = (parentId: string) =>
-    handleRequest(api.get(`/api/Comments/reply/${parentId}`));
+    apiClient.get(`/api/Comments/reply/${encodeURIComponent(parentId)}`);
