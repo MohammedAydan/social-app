@@ -1,14 +1,12 @@
+import { isAxiosError } from "axios";
+import { apiMessage, normalizeApiResponse } from "~/sdk/custom-instance";
 import type { ApiResponse } from "./api.response";
 
-export const handleRequest = async <T>(request: Promise<any>): Promise<ApiResponse<T>> => {
+export const handleRequest = async <T>(request: Promise<unknown>): Promise<ApiResponse<T>> => {
     try {
-        const response = await request;
-        return response.data;
-    } catch (error: any) {
-        // console.log(error);
-        if (error.response?.data) {
-            return error.response.data;
-        }
-        throw new Error(error.message || "Unknown error");
+        return normalizeApiResponse<T>(await request);
+    } catch (error) {
+        if (isAxiosError<ApiResponse<T>>(error) && error.response?.data) return error.response.data;
+        throw new Error(apiMessage(error));
     }
 };
