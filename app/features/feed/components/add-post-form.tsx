@@ -4,7 +4,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { Textarea } from "~/components/ui/textarea";
-import type { CreateMediaRequest } from "~/shared/types/create-post-type";
+import type { CreateMediaRequest } from "~/lib/sdk/models";
 import { useManageMedia } from "../hooks/use-manage-media";
 import { File, Image, Music, Video, X } from "lucide-react";
 
@@ -13,8 +13,8 @@ interface AddPostFormProps {
   setTitle: (value: string) => void;
   content: string;
   setContent: (value: string) => void;
-  visibility: 'public' | 'private';
-  setVisibility: (value: 'public' | 'private') => void;
+  visibility: 'Public' | 'Private';
+  setVisibility: (value: 'Public' | 'Private') => void;
   media: CreateMediaRequest[];
   setMedia: (media: CreateMediaRequest[]) => void;
   isPending: boolean;
@@ -48,7 +48,7 @@ const AddPostForm: React.FC<AddPostFormProps> = ({
   const addMedia = () => {
     setMedia([
       ...media,
-      { postId: '', name: '', type: 'image', url: '', thumbnailUrl: '' },
+      { name: '', type: 'image', url: '', thumbnailUrl: '' },
     ]);
   };
 
@@ -139,7 +139,7 @@ const AddPostForm: React.FC<AddPostFormProps> = ({
           )}
 
           {media.map((m, index) => {
-            const name = m.url.split('/').pop()?.split('.').shift();
+            const name = (m.url ?? '').split('/').pop()?.split('.').shift();
             return (
               <div className="space-y-4" key={index}>
                 <div className="border p-3 rounded-md space-y-2">
@@ -159,7 +159,7 @@ const AddPostForm: React.FC<AddPostFormProps> = ({
 
                     <div className="flex items-center justify-end">
                       <div className="px-3">
-                        {m.type.toUpperCase()}
+                        {(m.type ?? '').toUpperCase()}
                       </div>
                       <Button size={"icon"} variant={"destructive"} onClick={() => removeMedia(index)}>
                         <X />

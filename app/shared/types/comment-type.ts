@@ -8,7 +8,7 @@ export interface CommentType {
     content: string;
     parentId: string | null;
     repliesCount: number;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string | Date;
+    updatedAt: string | Date;
 }
 

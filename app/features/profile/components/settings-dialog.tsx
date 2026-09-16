@@ -1,6 +1,8 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "~/components/ui/dialog";
 import { Button } from "~/components/ui/button";
 import ChangePasswordDialog from "./change-password-dialog";
+import BlockedUsersDialog from "./blocked-users-dialog";
+import FollowRequestsDialog from "./follow-requests-dialog";
 import { Settings } from "lucide-react";
 
 const SettingsDialog = () => {
@@ -19,6 +21,8 @@ const SettingsDialog = () => {
                 </DialogHeader>
                 <div className="space-y-4">
                     <ChangePasswordDialog />
+                    <FollowRequestsDialog />
+                    <BlockedUsersDialog />
                 </div>
 
             </DialogContent>

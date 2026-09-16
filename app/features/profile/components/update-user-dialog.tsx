@@ -15,7 +15,7 @@ import { DropdownMenuItem } from '~/components/ui/dropdown-menu';
 import { useState } from 'react';
 import { Pencil } from 'lucide-react';
 import { useAuth } from '~/features/auth/hooks/use-auth';
-import type { UpdateUserType } from '~/shared/types/user-type';
+import type { UpdateUserDto } from '~/lib/sdk/models';
 import { updateUserProfile } from '~/shared/api';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
 
@@ -30,12 +30,14 @@ const UpdateUserDialog = ({ triggerAs = 'button' }: UpdateUserDialogProps) => {
 
     if (!user) return null;
 
-    const [form, setForm] = useState<UpdateUserType>({
+    // Form state keeps UI-only extras (`userGender`, date-only `birthDate`);
+    // the wire shape is restored at submit (ISO datetime, spec DTO).
+    const [form, setForm] = useState<UpdateUserDto & { userGender: string; birthDate: string }>({
         id: user.id,
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         userName: user.userName || '',
-        birthDate: user.birthDate ? new Date(user.birthDate) : new Date(),
+        birthDate: user.birthDate ? new Date(user.birthDate).toISOString().split('T')[0] ?? '' : '',
         userGender: user.userGender || '',
         bio: user.bio || '',
         profileImageUrl: user.profileImageUrl || '',
@@ -56,7 +58,8 @@ const UpdateUserDialog = ({ triggerAs = 'button' }: UpdateUserDialogProps) => {
     const handleSubmit = async () => {
         setLoading(true);
         try {
-            await updateUserProfile(form);
+            const { userGender: _userGender, ...wire } = form;
+            await updateUserProfile({ ...wire, birthDate: new Date(form.birthDate).toISOString() });
             setUser({ ...user, ...form });
             setOpen(false);
         } catch (error) {
@@ -95,11 +98,11 @@ const UpdateUserDialog = ({ triggerAs = 'button' }: UpdateUserDialogProps) => {
                     <Input
                         name="birthDate"
                         type="date"
-                        value={form.birthDate.toISOString().split('T')[0]}
+                        value={form.birthDate}
                         onChange={e =>
                             setForm(prev => ({
                                 ...prev,
-                                birthDate: new Date(e.target.value),
+                                birthDate: e.target.value,
                             }))
                         }
                     />

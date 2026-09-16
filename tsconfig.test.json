@@ -1,0 +1,35 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": ".test-output",
+    "rootDir": "app",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "verbatimModuleSyntax": false,
+    "types": ["node"],
+    "paths": {}
+  },
+  "include": [
+    "app/features/profile/utils/follow-state.ts",
+    "app/features/profile/utils/follow-state.test.ts",
+    "app/shared/types/follow-type.ts",
+    "app/shared/types/follow-type.test.ts",
+    "app/shared/types/user-type.ts",
+    "app/shared/types/user-type.test.ts",
+    "app/shared/utils/display-name.ts",
+    "app/shared/utils/display-name.test.ts",
+    "app/shared/utils/token.ts",
+    "app/shared/utils/token.test.ts",
+    "app/features/profile/utils/follow-sequence.test.ts",
+    "app/lib/sdk/validations/follow/follow.test.ts",
+    "app/shared/api/api.handle-request.ts",
+    "app/shared/api/api.handle-request.test.ts",
+    "app/lib/sdk/validations/posts/posts.test.ts",
+    "app/lib/sdk/validations/comments/comments.test.ts",
+    "app/lib/sdk/validations/like/like.test.ts",
+    "app/lib/sdk/validations/block-user/block-user.test.ts",
+    "app/lib/sdk/validations/notifications/notifications.test.ts",
+    "app/lib/sdk/validations/user/user.test.ts"
+  ]
+}

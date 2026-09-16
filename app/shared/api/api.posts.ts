@@ -1,32 +1,58 @@
-// api/api.posts.ts
-import type { CreatePostType } from "../types/create-post-type";
-import type { PostType } from "../types/post-types";
-import type { SharePostRequest } from "../types/share-post-type";
-import type { UpdatePostRequest } from "../types/update-post-type";
+// api/api.posts.ts — Posts domain, backed by the generated SDK
+// (`app/lib/sdk/endpoints/posts`). No manual HTTP, no local DTOs: payloads use
+// the canonical models and their Zod schemas; reads return the same
+// `ApiResponse<PostType>` envelopes as before.
+import {
+    deleteApiPostsPostId,
+    getApiPostsFeed,
+    getApiPostsMyPosts,
+    getApiPostsPostId,
+    getApiPostsUserUserId,
+    postApiPosts,
+    postApiPostsShare,
+    putApiPosts,
+} from "~/lib/sdk/endpoints/posts/posts";
+import type { CreatePostRequest, SharePostRequest, UpdatePostRequest } from "~/lib/sdk/models";
+import {
+    GetApiPostsFeedQueryParams,
+    GetApiPostsMyPostsQueryParams,
+    GetApiPostsUserUserIdQueryParams,
+    PostApiPostsBody,
+    PostApiPostsShareBody,
+    PutApiPostsBody,
+} from "~/lib/sdk/validations/posts/posts";
+import { normalizeVisibility, type PostType } from "../types/post-types";
 import { handleRequest } from "./api.handle-request";
 import type { ApiResponse } from "./api.response";
-import api from "./axios";
 
-export const createPost = async (payload: CreatePostType): Promise<ApiResponse<PostType>> =>
-    handleRequest(api.post("/api/Posts", payload));
+/** The server compares visibility exactly — always send the canonical form. */
+const withCanonicalVisibility = <T extends { visibility?: string }>(payload: T): T => ({
+    ...payload,
+    visibility: normalizeVisibility(payload.visibility),
+});
+
+export const createPost = async (payload: CreatePostRequest): Promise<ApiResponse<PostType>> =>
+    handleRequest(postApiPosts(PostApiPostsBody.parse(withCanonicalVisibility(payload))));
 
 export const updatePost = async (payload: UpdatePostRequest): Promise<ApiResponse<PostType>> =>
-    handleRequest(api.put("/api/Posts", payload));
+    handleRequest(putApiPosts(PutApiPostsBody.parse(withCanonicalVisibility(payload))));
 
 export const getPost = async (id: string): Promise<ApiResponse<PostType>> =>
-    handleRequest(api.get(`/api/Posts/${id}`));
+    handleRequest(getApiPostsPostId(id));
 
 export const deletePost = async (id: string): Promise<ApiResponse<null>> =>
-    handleRequest(api.delete(`/api/Posts/${id}`));
+    handleRequest(deleteApiPostsPostId(id));
 
 export const getFeed = async (page = 1, limit = 20): Promise<ApiResponse<PostType[]>> =>
-    handleRequest(api.get("/api/Posts/feed", { params: { Page: page, Limit: limit } }));
+    handleRequest(getApiPostsFeed(GetApiPostsFeedQueryParams.parse({ Page: page, Limit: limit })));
 
 export const getMyPosts = async (page = 1, limit = 20): Promise<ApiResponse<PostType[]>> =>
-    handleRequest(api.get("/api/Posts/my-posts", { params: { Page: page, Limit: limit } }));
+    handleRequest(getApiPostsMyPosts(GetApiPostsMyPostsQueryParams.parse({ Page: page, Limit: limit })));
 
 export const getPostsByUserId = async (userId: string, page = 1, limit = 20): Promise<ApiResponse<PostType[]>> =>
-    handleRequest(api.get(`/api/Posts/user/${userId}`, { params: { Page: page, Limit: limit } }));
+    handleRequest(
+        getApiPostsUserUserId(userId, GetApiPostsUserUserIdQueryParams.parse({ Page: page, Limit: limit }))
+    );
 
 export const sharePost = async (payload: SharePostRequest): Promise<ApiResponse<PostType>> =>
-    handleRequest(api.post("/api/Posts/share", payload));
+    handleRequest(postApiPostsShare(PostApiPostsShareBody.parse(withCanonicalVisibility(payload))));

@@ -1,33 +1,22 @@
+// api/api.auth.ts — Register/sign-in, backed by the generated SDK
+// (`app/lib/sdk/endpoints/user`). No manual HTTP. `AuthResponseType` stays
+// local: the spec has no auth-response model (it's the envelope's data).
+import { postApiUserRegister, postApiUserSignIn } from "~/lib/sdk/endpoints/user/user";
+import type { CreateUserRequest, SignIn } from "~/lib/sdk/models";
+import {
+    PostApiUserRegisterBody,
+    PostApiUserSignInBody,
+} from "~/lib/sdk/validations/user/user";
 import type { AuthResponseType } from "../types/auth-response-type";
-import type { CreateUserType } from "../types/create-user-type";
-import type { SignInType } from "../types/sign-in-type";
+import { handleRequest } from "./api.handle-request";
 import type { ApiResponse } from "./api.response";
-import api from "./axios";
 
 export const registerUser = async (
-    userData: CreateUserType
-): Promise<ApiResponse<AuthResponseType>> => {
-    try {
-        const response = await api.post<ApiResponse<AuthResponseType>>("/api/User/register", userData);
-        return response.data; 
-    } catch (error: any) {
-        if (error.response?.data) {
-            return error.response.data;
-        }
-        throw new Error(error.message || "Unknown registration error");
-    }
-};
+    userData: CreateUserRequest
+): Promise<ApiResponse<AuthResponseType>> =>
+    handleRequest(postApiUserRegister(PostApiUserRegisterBody.parse(userData)));
 
 export const signInUser = async (
-    credentials: SignInType
-): Promise<ApiResponse<AuthResponseType>> => {
-    try {
-        const response = await api.post<ApiResponse<AuthResponseType>>("/api/User/sign-in", credentials);
-        return response.data;
-    } catch (error: any) {
-        if (error.response?.data) {
-            return error.response.data;
-        }
-        throw new Error(error.message || "Unknown sign-in error");
-    }
-};
+    credentials: SignIn
+): Promise<ApiResponse<AuthResponseType>> =>
+    handleRequest(postApiUserSignIn(PostApiUserSignInBody.parse(credentials)));

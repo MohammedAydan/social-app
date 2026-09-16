@@ -3,7 +3,8 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Label } from '~/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
-import type { CreateMediaRequest, CreatePostType } from '~/shared/types/create-post-type';
+import type { CreateMediaRequest, CreatePostRequest } from '~/lib/sdk/models';
+import { normalizeVisibility } from '~/shared/types/post-types';
 import { useNavigate } from 'react-router';
 import { createPost } from '~/shared/api';
 import { Button } from '~/components/ui/button';
@@ -17,8 +18,8 @@ function VisibilitySelector({
     setVisibility,
     isPending,
 }: {
-    visibility: 'public' | 'private';
-    setVisibility: (value: 'public' | 'private') => void;
+    visibility: 'Public' | 'Private';
+    setVisibility: (value: 'Public' | 'Private') => void;
     isPending: boolean;
 }) {
     return (
@@ -26,15 +27,15 @@ function VisibilitySelector({
             <Label>Visibility:</Label>
             <Select
                 value={visibility}
-                onValueChange={(value) => setVisibility(value as 'public' | 'private')}
+                onValueChange={(value) => setVisibility(normalizeVisibility(value) as 'Public' | 'Private')}
                 disabled={isPending}
             >
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select visibility" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="public">Public</SelectItem>
-                    <SelectItem value="private">Private</SelectItem>
+                    <SelectItem value="Public">Public</SelectItem>
+                    <SelectItem value="Private">Private</SelectItem>
                 </SelectContent>
             </Select>
         </div>
@@ -44,13 +45,13 @@ function VisibilitySelector({
 export default function AddPostPage() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [visibility, setVisibility] = useState<'public' | 'private'>('public');
+    const [visibility, setVisibility] = useState<'Public' | 'Private'>('Public');
     const navigate = useNavigate();
     const { media, setMedia, isLoading } = useManageMedia();
 
 
     const { mutate, isPending } = useMutation({
-        mutationFn: (post: CreatePostType) => createPost(post),
+        mutationFn: (post: CreatePostRequest) => createPost(post),
         onSuccess: () => {
             toast.success('Success', {
                 description: 'Post created successfully',
@@ -68,7 +69,7 @@ export default function AddPostPage() {
     const resetForm = () => {
         setTitle('');
         setContent('');
-        setVisibility('public');
+        setVisibility('Public');
         setMedia([]);
     };
 
@@ -79,7 +80,7 @@ export default function AddPostPage() {
             });
             return;
         }
-        const post: CreatePostType = {
+        const post: CreatePostRequest = {
             title,
             content,
             visibility,

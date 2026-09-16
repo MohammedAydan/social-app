@@ -2,6 +2,7 @@ import {
     createContext,
     useState,
     useCallback,
+    useEffect,
     type ReactNode,
 } from "react";
 import { toast } from "sonner";
@@ -12,6 +13,7 @@ import {
 } from "~/shared/api";
 import type { CommentType } from "~/shared/types/comment-type";
 import type { PostType } from "~/shared/types/post-types";
+import { normalizeVisibility } from "~/shared/types/post-types";
 import { useFeed } from "../hooks/use-feed";
 
 interface PostContextProps {
@@ -59,7 +61,14 @@ export const PostProvider = ({ children, initialPostData }: PostProviderProps) =
     const [loadingSharePost, setLoadingSharePost] = useState(false);
     const [deletePostLoading, setDeletePostLoading] = useState(false);
 
-    const { addPostLocal, deletePostLocal } = useFeed();
+    // Keep local state in sync when the parent passes a new post object
+    // (feed refresh, pagination, query refetch). Without this the card
+    // renders stale like/comment counters.
+    useEffect(() => {
+        setPost(initialPostData);
+    }, [initialPostData]);
+
+    const { addPostLocal, deletePostLocal, updatePostLocal } = useFeed();
 
     const toggleLikeLocal = useCallback(() => {
         setPost(prev => {
@@ -75,9 +84,30 @@ export const PostProvider = ({ children, initialPostData }: PostProviderProps) =
     const toggleLike = useCallback(async () => {
         if (!post) return;
 
+        const wasLiked = post.isLiked;
         toggleLikeLocal();
         try {
-            await likePost(post.id);
+            // handleRequest resolves to an envelope (success:false) instead of
+            // throwing, so the result must be inspected explicitly.
+            // POST is the only Like write op (DELETE → 405), so it serves as
+            // the toggle for both directions.
+            const response = await likePost(post.id);
+            if (!response.success) {
+                const msg = response.message ?? "Unknown error";
+                const lower = msg.toLowerCase();
+                const stateUnchanged = lower.includes("duplicate") || lower.includes("already");
+                if (stateUnchanged) {
+                    // Server says the like state didn't change: the optimistic
+                    // update is right only when liking (already liked). When
+                    // unliking, the like still exists → revert to liked.
+                    if (wasLiked) toggleLikeLocal(); // revert
+                    return;
+                }
+                toggleLikeLocal(); // revert
+                toast.error(wasLiked ? "Failed to unlike post" : "Failed to like post", {
+                    description: msg
+                });
+            }
         } catch (error) {
             toggleLikeLocal(); // revert
             toast.error("Failed to like post", {
@@ -99,10 +129,14 @@ export const PostProvider = ({ children, initialPostData }: PostProviderProps) =
 
         setLoadingSharePost(true);
         try {
-            const response = await sharePost({ parentPostId: post.id, visibility: "public" });
-            if (response.data) {
+            const response = await sharePost({ parentPostId: post.id, visibility: "Public" });
+            if (response.success && response.data) {
                 addPostLocal(response.data);
                 toast.success("Post shared successfully");
+            } else {
+                toast.error("Failed to share post", {
+                    description: response.message ?? "The post may be private, deleted, or blocked."
+                });
             }
         } catch (error) {
             toast.error("Failed to share post", {
@@ -124,7 +158,7 @@ export const PostProvider = ({ children, initialPostData }: PostProviderProps) =
                 setPost(null);
                 toast.success("Post deleted successfully");
             } else {
-                throw new Error("Failed to delete post");
+                toast.error("Failed to delete post", { description: response.message });
             }
         } catch (error) {
             toast.error("Failed to delete post", {
@@ -136,8 +170,13 @@ export const PostProvider = ({ children, initialPostData }: PostProviderProps) =
     }, [post, deletePostLocal]);
 
     const updatePostLocalHandler = useCallback((updatedPost: PostType) => {
-        setPost(prev => prev ? { ...prev, ...updatedPost } : prev);
-    }, []);
+        const normalized = {
+            ...updatedPost,
+            visibility: normalizeVisibility((updatedPost as PostType).visibility),
+        } as PostType;
+        setPost(prev => prev ? { ...prev, ...normalized } : prev);
+        updatePostLocal(normalized);
+    }, [updatePostLocal]);
 
     return (
         <PostContext.Provider

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { uploadAsset } from "~/shared/api/api.storage";
-import type { CreateMediaRequest } from "~/shared/types/create-post-type";
+import type { CreateMediaRequest } from "~/lib/sdk/models";
 
 interface MediaContextType {
     media: CreateMediaRequest[];
@@ -50,7 +50,6 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 }
 
                 const newMedia: CreateMediaRequest = {
-                    postId: '',
                     name: file.name,
                     type: getMediaType(file),
                     url: mediaUrl.data,

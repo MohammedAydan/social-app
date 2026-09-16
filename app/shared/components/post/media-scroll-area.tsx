@@ -30,19 +30,24 @@ interface MediaScrollAreaProps {
 
 // Media type configuration
 const MEDIA_CONFIG = {
-    image: { icon: "📷", label: "Image" },
-    video: { icon: "🎥", label: "Video" },
-    audio: { icon: "🎵", label: "Audio" },
-    file: { icon: "📄", label: "Document" }
+    image: { label: "Image" },
+    video: { label: "Video" },
+    audio: { label: "Audio" },
+    file: { label: "Document" }
 } as const;
 
-// Grid layout configurations
-const GRID_LAYOUTS = {
-    1: { cols: "grid-cols-1", height: "h-[400px] sm:h-[500px]" },
-    2: { cols: "grid-cols-2", height: "h-[280px] sm:h-[320px]" },
-    3: { cols: "grid-cols-3", height: "h-[200px] sm:h-[240px]" },
-    4: { cols: "grid-cols-2", height: "h-[200px] sm:h-[240px]" }
-} as const;
+// Mosaic layout: 1 → hero, 2 → split, 3 → wide hero + split row,
+// 4+ → even 2×2 (extra items behind a "+N" overlay).
+const TILE_HEIGHT_1 = "h-[300px] sm:h-[420px]";
+const TILE_HEIGHT_2 = "h-[220px] sm:h-[300px]";
+const TILE_HEIGHT_HALF = "h-[180px] sm:h-[220px]";
+
+const tileClass = (index: number, count: number): string => {
+    if (count === 1) return TILE_HEIGHT_1;
+    if (count === 2) return TILE_HEIGHT_2;
+    if (count === 3) return index === 0 ? `col-span-2 h-[220px] sm:h-[280px]` : TILE_HEIGHT_HALF;
+    return TILE_HEIGHT_HALF;
+};
 
 export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
     // State management
@@ -53,10 +58,7 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
     // Computed values
     const mediaCount = useMemo(() => media.length, [media.length]);
     const isMultipleMedia = useMemo(() => mediaCount > 1, [mediaCount]);
-    const gridConfig = useMemo(() => {
-        const count = Math.min(mediaCount, 4) as keyof typeof GRID_LAYOUTS;
-        return GRID_LAYOUTS[count] || GRID_LAYOUTS[4];
-    }, [mediaCount]);
+    const gridCols = mediaCount === 1 ? "grid-cols-1" : "grid-cols-2";
 
     // Event handlers
     const handleMediaClick = useCallback((mediaItem: Media, index: number) => {
@@ -129,14 +131,15 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
 
     // Thumbnail renderer for grid view
     const renderThumbnail = useCallback((mediaItem: Media) => {
+        const alt = mediaItem.name?.trim() || "Post image";
         switch (mediaItem.type) {
             case "image":
                 return (
-                    <div className="relative group w-full h-full overflow-hidden rounded-xl">
+                    <div className="relative group w-full h-full overflow-hidden rounded-xl bg-muted">
                         <img
                             src={mediaItem.thumbnailUrl || mediaItem.url}
-                            alt={mediaItem.name}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            alt={alt}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                             loading="lazy"
                             draggable={false}
                         />
@@ -145,26 +148,32 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
                 );
 
             case "video":
-                return (
-                    <div className="relative group w-full h-full overflow-hidden rounded-xl">
-                        {/* Poster Image */}
+                // No poster available → gradient placeholder (a video URL as
+                // <img> src would render broken). Poster wins when present.
+                return mediaItem.thumbnailUrl ? (
+                    <div className="relative group w-full h-full overflow-hidden rounded-xl bg-muted">
                         <img
-                            src={mediaItem.thumbnailUrl || mediaItem.url}
-                            alt={mediaItem.name}
+                            src={mediaItem.thumbnailUrl}
+                            alt={alt}
                             className="w-full h-full object-cover"
                             loading="lazy"
                             draggable={false}
                         />
                         {/* Play Button Overlay */}
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors duration-300">
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/25 group-hover:bg-black/35 transition-colors duration-300">
                             <div className="bg-background/90 dark:bg-background/90 rounded-full p-3 backdrop-blur-sm shadow-lg border border-border/20">
-                                <Play className="h-6 w-6 text-foreground ml-1" />
+                                <Play className="h-6 w-6 text-foreground ml-0.5" />
                             </div>
                         </div>
-                        {/* Duration Badge */}
-                        <div className="absolute bottom-2 right-2 bg-background/80 dark:bg-background/80 text-foreground px-2 py-1 rounded text-xs font-medium backdrop-blur-sm">
-                            Video
+                    </div>
+                ) : (
+                    <div className="relative w-full h-full overflow-hidden rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-950 dark:from-zinc-900 dark:to-black flex flex-col items-center justify-center gap-2 p-4">
+                        <div className="bg-background/90 rounded-full p-3.5 shadow-lg">
+                            <Play className="h-7 w-7 text-foreground ml-0.5" />
                         </div>
+                        <span className="text-xs font-medium text-white/80 line-clamp-1 max-w-full px-2">
+                            {mediaItem.name || "Video"}
+                        </span>
                     </div>
                 );
 
@@ -305,25 +314,24 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
             {/* Media Grid */}
             <div
                 className={cn(
-                    "grid gap-2 sm:gap-3 w-full rounded-2xl overflow-hidden",
-                    gridConfig.cols,
-                    "bg-muted/10 dark:bg-muted/5 border border-border/30"
+                    "grid gap-1.5 sm:gap-2 w-full rounded-2xl overflow-hidden",
+                    gridCols,
+                    "bg-muted/30 border border-border/40 p-1.5"
                 )}
             >
                 {media.slice(0, 4).map((mediaItem, index) => {
                     const isLastItem = index === 3 && media.length > 4;
                     const remainingCount = media.length - 4;
-                    const config = MEDIA_CONFIG[mediaItem.type] || MEDIA_CONFIG.file;
+                    const config = MEDIA_CONFIG[mediaItem.type as keyof typeof MEDIA_CONFIG] || MEDIA_CONFIG.file;
 
                     return (
                         <motion.div
                             key={mediaItem.id}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
                             className={cn(
-                                "relative cursor-pointer group overflow-hidden rounded-xl shadow-sm",
-                                gridConfig.height,
-                                media.length === 3 && index === 2 && "col-span-3"
+                                "relative cursor-pointer group overflow-hidden rounded-xl",
+                                tileClass(index, media.length)
                             )}
                             onClick={() => handleMediaClick(mediaItem, index)}
                         >
@@ -341,13 +349,14 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
                                 </div>
                             )}
 
-                            {/* Media type indicator */}
-                            <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <div className="bg-background/90 dark:bg-background/90 text-foreground px-2 py-1 rounded-lg text-xs font-medium backdrop-blur-sm border border-border/30 flex items-center gap-1">
-                                    <span>{config.icon}</span>
-                                    <span>{config.label}</span>
+                            {/* Media type badge — always visible (touch has no hover) */}
+                            {!isLastItem && (
+                                <div className="absolute bottom-2 left-2">
+                                    <div className="bg-black/65 text-white px-2 py-0.5 rounded-md text-[11px] font-medium backdrop-blur-sm">
+                                        {config.label}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </motion.div>
                     );
                 })}
@@ -355,7 +364,7 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
 
             {/* Media count indicator */}
             {isMultipleMedia && (
-                <div className="flex items-center justify-center mt-4">
+                <div className="flex items-center justify-center mt-2.5">
                     <div className="flex items-center space-x-2 bg-background/80 dark:bg-background/80 border border-border/50 rounded-full px-4 py-2 backdrop-blur-sm">
                         <div className="flex space-x-1">
                             {Array.from({ length: Math.min(media.length, 5) }).map((_, i) => (
@@ -401,7 +410,7 @@ export const MediaScrollArea = ({ media, className }: MediaScrollAreaProps) => {
                             >
                                 <div className="flex items-center space-x-3">
                                     <div className="text-foreground text-sm font-medium max-w-xs truncate">
-                                        {selectedMedia.name}
+                                        {selectedMedia.name?.trim() || "Untitled"}
                                     </div>
                                     <div className="text-muted-foreground text-xs uppercase tracking-wide">
                                         {MEDIA_CONFIG[selectedMedia.type]?.label || 'Unknown'}

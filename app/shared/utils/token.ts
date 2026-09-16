@@ -1,4 +1,4 @@
-import { accessTokenKey, refreshTokenKey } from "./strings";
+import { accessTokenKey, refreshTokenKey } from "./strings.js";
 
 // access token
 

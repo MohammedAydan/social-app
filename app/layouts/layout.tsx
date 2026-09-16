@@ -11,9 +11,21 @@ export const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
             refetchOnWindowFocus: false,
-        }
+            staleTime: 30_000,
+            gcTime: 5 * 60_000,
+            retry: 1,
+        },
+        mutations: {
+            retry: 0,
+        },
     }
 });
+
+/** Toaster needs the theme from inside ThemeProvider (hooks can't run above it). */
+const ThemedToaster = () => {
+    const { theme } = useTheme();
+    return <Toaster theme={theme as "light" | "dark" | "system"} />;
+};
 
 const GlobalLayout = ({ children }: { children: ReactNode }) => {
     return (
@@ -27,7 +39,7 @@ const GlobalLayout = ({ children }: { children: ReactNode }) => {
                             {children}
                         </MediaProvider>
                     </AuthProviderAndLayout>
-                    <Toaster theme={useTheme().theme} />
+                    <ThemedToaster />
                 </ThemeProvider>
             </QueryClientProvider>
         </div>

@@ -73,11 +73,12 @@ const Register = () => {
     const onSubmit = async (values: FormData) => {
         const formattedValues = {
             ...values,
-            birthDate: new Date(values.birthDate), // ✅ Convert string to Date
+            // Wire requires an ISO datetime string (spec: datetime+offset).
+            birthDate: new Date(values.birthDate).toISOString(),
             userGender: values.userGender,
         };
 
-        await register(formattedValues); // ✅ Should now match CreateUserType
+        await register(formattedValues); // Matches the canonical CreateUserRequest
     };
 
     return (

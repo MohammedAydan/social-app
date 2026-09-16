@@ -19,6 +19,7 @@ import {
 } from '~/components/ui/dropdown-menu';
 import { useAuth } from '~/features/auth/hooks/use-auth';
 import UserAvatar from '~/shared/components/user-avatar';
+import { getDisplayName } from '~/shared/utils/display-name';
 
 const SideBar = () => {
     const { user, isAuthenticated, logout } = useAuth();
@@ -100,6 +101,7 @@ const SideBar = () => {
                                     <UserAvatar
                                         url={user?.profileImageUrl}
                                         username={user?.userName}
+                                        displayName={user ? getDisplayName(user) : undefined}
                                         size={34}
                                     />
                                 </Button>

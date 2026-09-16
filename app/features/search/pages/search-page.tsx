@@ -18,6 +18,7 @@ import UserAvatar from "~/shared/components/user-avatar";
 
 import type { UserType } from "~/shared/types/user-type";
 import { useAuth } from "~/features/auth/hooks/use-auth";
+import { getDisplayName, getHandle } from "~/shared/utils/display-name";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -45,14 +46,35 @@ const SearchPage = () => {
         refetch,
     } = useInfiniteQuery({
         queryKey: ["searchResults", debouncedQuery],
-        queryFn: ({ pageParam = 1 }) =>
-            searchUsers(debouncedQuery, pageParam, DEFAULT_PAGE_SIZE, { userId: user?.id ?? null }).then(
-                (res) => res.data
-            ),
-        getNextPageParam: (lastPage) =>
-            lastPage.currentPage < lastPage.totalPages
-                ? lastPage.currentPage + 1
-                : undefined,
+        queryFn: async ({ pageParam = 1 }) => {
+            const res = await searchUsers(debouncedQuery, pageParam, DEFAULT_PAGE_SIZE, { userId: user?.id ?? null });
+            if (!res.success) throw new Error(res.message || "Search failed");
+            // Backend may return a bare array (ApiResponse<UserType[]>) or a
+            // paginated object ({ items|data, currentPage, totalPages, ... }).
+            // Normalize both shapes here so display never crashes.
+            const raw: unknown = res.data;
+            if (Array.isArray(raw)) {
+                return {
+                    items: raw as UserType[],
+                    nextPage: raw.length === DEFAULT_PAGE_SIZE ? pageParam + 1 : undefined,
+                };
+            }
+            const obj = (raw ?? {}) as {
+                items?: UserType[]; data?: UserType[];
+                currentPage?: number; page?: number;
+                totalPages?: number; total?: number;
+            };
+            const items = obj.items ?? obj.data ?? [];
+            const currentPage = obj.currentPage ?? obj.page ?? pageParam;
+            const totalPages = obj.totalPages ?? (obj.total != null ? Math.ceil(obj.total / DEFAULT_PAGE_SIZE) : undefined);
+            return {
+                items,
+                nextPage: totalPages != null
+                    ? (currentPage < totalPages ? currentPage + 1 : undefined)
+                    : (items.length === DEFAULT_PAGE_SIZE ? pageParam + 1 : undefined),
+            };
+        },
+        getNextPageParam: (lastPage) => lastPage.nextPage,
         initialPageParam: 1,
         enabled: debouncedQuery.length > 0,
     });
@@ -80,10 +102,20 @@ const SearchPage = () => {
     };
 
     const handleSearch = () => {
-        if (searchQuery.trim()) refetch();
+        const q = searchQuery.trim();
+        if (!q) return;
+        // Sync the debounced value instead of bare refetch(): refetch()
+        // bypasses `enabled` and would fire with the stale (possibly empty)
+        // debouncedQuery — the server 400s empty `q` (verified live E2E).
+        // Only force-refetch when the query didn't change.
+        if (q === debouncedQuery) {
+            void refetch();
+        } else {
+            setDebouncedQuery(q);
+        }
     };
 
-    const allResults = data?.pages.flatMap((page) => page) || [];
+    const allResults = data?.pages.flatMap((page) => page.items) || [];
 
     const renderSkeletons = (count: number) =>
         Array.from({ length: count }).map((_, i) => (
@@ -182,17 +214,20 @@ const SearchPage = () => {
 export default SearchPage;
 
 const UserCard = ({ user }: { user: UserType }) => {
+    const displayName = getDisplayName(user);
+    const handle = getHandle(user);
     return (
         <Card className="p-4 shadow-sm hover:shadow-md transition duration-200 rounded-xl">
             <div className="flex items-center gap-4">
-                <UserAvatar url={user.profileImageUrl} username={user.userName} />
-                <div className="flex-1">
+                <UserAvatar url={user.profileImageUrl} username={user.userName} displayName={displayName} />
+                <div className="flex-1 min-w-0">
                     {/* <h3 className="text-md font-semibold">{user.userName}</h3> */}
-                    <h3 className="text-md font-semibold flex items-center gap-2">
-                        {user?.userName} {user?.isVerified && (<BadgeCheck className="text-primary" size={20} />)}
+                    <h3 className="text-md font-semibold flex items-center gap-2 truncate">
+                        <span className="truncate">{displayName}</span>
+                        {user?.isVerified && (<BadgeCheck className="text-primary shrink-0" size={20} />)}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
-                        {user.email || "No email"}
+                    <p className="text-sm text-muted-foreground truncate">
+                        {handle}{user.email ? ` · ${user.email}` : ""}
                     </p>
                     {user.bio && (
                         <p className="text-sm mt-1 line-clamp-2 text-muted-foreground/80">

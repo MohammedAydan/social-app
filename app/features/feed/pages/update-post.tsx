@@ -23,9 +23,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
 import FullMDXEditor from './_editor';
 import AddPostForm from '../components/add-post-form';
 
-import type { CreateMediaRequest, CreatePostType } from '~/shared/types/create-post-type';
+import type { MediaDto, UpdatePostRequest } from '~/lib/sdk/models';
 import type { PostType } from '~/shared/types/post-types';
-import type { UpdatePostRequest } from '~/shared/types/update-post-type';
+import { normalizeVisibility } from '~/shared/types/post-types';
 import { updatePost } from '~/shared/api';
 import { DropdownMenuItem } from '~/components/ui/dropdown-menu';
 import { Pencil } from 'lucide-react';
@@ -36,8 +36,8 @@ function VisibilitySelector({
     setVisibility,
     isPending,
 }: {
-    visibility: 'public' | 'private';
-    setVisibility: (value: 'public' | 'private') => void;
+    visibility: 'Public' | 'Private';
+    setVisibility: (value: 'Public' | 'Private') => void;
     isPending: boolean;
 }) {
     return (
@@ -45,15 +45,15 @@ function VisibilitySelector({
             <Label>Visibility:</Label>
             <Select
                 value={visibility}
-                onValueChange={(value) => setVisibility(value as 'public' | 'private')}
+                onValueChange={(value) => setVisibility(normalizeVisibility(value) as 'Public' | 'Private')}
                 disabled={isPending}
             >
                 <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Select visibility" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="public">Public</SelectItem>
-                    <SelectItem value="private">Private</SelectItem>
+                    <SelectItem value="Public">Public</SelectItem>
+                    <SelectItem value="Private">Private</SelectItem>
                 </SelectContent>
             </Select>
         </div>
@@ -66,29 +66,42 @@ export default function UpdatePostDialog() {
 
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [visibility, setVisibility] = useState<'public' | 'private'>('public');
-    const [media, setMedia] = useState<CreateMediaRequest[]>([]);
+    const [visibility, setVisibility] = useState<'Public' | 'Private'>('Public');
+    const [media, setMedia] = useState<MediaDto[]>([]);
 
     useEffect(() => {
         if (post) {
-            setTitle(post.title);
-            setContent(post.content);
-            setVisibility(post.visibility);
-            setMedia(post.media || []);
+            setTitle(post.title ?? '');
+            setContent(post.content ?? '');
+            setVisibility(normalizeVisibility(post.visibility) as 'Public' | 'Private');
+            setMedia((post.media || []).map(m => ({
+                id: m.id,
+                postId: m.postId,
+                name: m.name,
+                type: m.type,
+                url: m.url,
+                thumbnailUrl: m.thumbnailUrl,
+            })));
         }
     }, [post]);
 
     const { mutate, isPending } = useMutation({
         mutationFn: (updatedPost: UpdatePostRequest) => updatePost(updatedPost),
-        onSuccess: () => {
+        onSuccess: (response) => {
+            if (!response.success) {
+                toast.error('Error updating post', { description: response.message });
+                return;
+            }
+            // Prefer the server echo (counters, timestamps) over local state.
+            const serverPost = (response.data ?? {
+                ...post,
+                title,
+                content,
+                visibility,
+                media,
+            }) as PostType;
             if (updatePostLocalHandler) {
-                updatePostLocalHandler({
-                    ...post,
-                    title,
-                    content,
-                    visibility,
-                    media,
-                } as PostType);
+                updatePostLocalHandler(serverPost);
             }
             toast.success('Post updated successfully');
             setOpen(false);
@@ -107,7 +120,10 @@ export default function UpdatePostDialog() {
             title,
             content,
             visibility,
-            media: [],
+            // Reconciled by Id server-side: kept Ids update, missing delete,
+            // blank Ids insert. Never send an empty array here (it would
+            // wipe all media on every text edit).
+            media,
         };
         mutate(updatedPost);
     };

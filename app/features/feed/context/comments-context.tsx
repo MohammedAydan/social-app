@@ -120,7 +120,11 @@ export const CommentsProvider = ({ children }: { children: ReactNode }) => {
                 setLoadingAddComment(true);
                 if (!post?.id) throw new Error("Post not found");
 
-                await createComment({ postId: post.id, content });
+                const response = await createComment({ postId: post.id, content });
+                if (!response.success) {
+                    toast.error("Failed to add comment", { description: response.message });
+                    return;
+                }
                 incrementCommentsCounter();
                 await refetch();
 
@@ -148,7 +152,11 @@ export const CommentsProvider = ({ children }: { children: ReactNode }) => {
                 setLoadingAddReplyComment(true);
                 if (!post?.id) throw new Error("Post not found");
 
-                await createReplyComment({ postId: post.id, content, parentId });
+                const response = await createReplyComment({ postId: post.id, content, parentId });
+                if (!response.success) {
+                    toast.error("Failed to add reply", { description: response.message });
+                    return;
+                }
                 incrementCommentsCounter();
                 await refetch();
 
@@ -169,7 +177,11 @@ export const CommentsProvider = ({ children }: { children: ReactNode }) => {
         async (commentId: string) => {
             try {
                 setLoadingDeleteComment(true);
-                await deleteComment(commentId);
+                const response = await deleteComment(commentId);
+                if (!response.success) {
+                    toast.error("Failed to remove comment", { description: response.message });
+                    return;
+                }
                 decrementCommentsCounter();
                 await refetch();
 
@@ -189,7 +201,11 @@ export const CommentsProvider = ({ children }: { children: ReactNode }) => {
     const removeReplyComment = useCallback(
         async (replyId: string) => {
             try {
-                await deleteReplyComment(replyId);
+                const response = await deleteReplyComment(replyId);
+                if (!response.success) {
+                    toast.error("Failed to remove reply", { description: response.message });
+                    return;
+                }
                 decrementCommentsCounter();
                 await refetch();
 

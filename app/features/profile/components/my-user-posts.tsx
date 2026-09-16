@@ -15,6 +15,7 @@ export const useMyUserPostsQuery = () => {
         queryKey: QUERY_KEY,
         queryFn: async ({ pageParam = 1 }) => {
             const response = await getMyPosts(pageParam, LIMIT);
+            if (!response.success) throw new Error(response.message || "Failed to fetch posts");
             return {
                 data: response.data,
                 nextPage: response.data?.length === LIMIT ? pageParam + 1 : undefined,

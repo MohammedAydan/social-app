@@ -7,12 +7,13 @@ import React, {
     useMemo,
 } from "react";
 import type { ReactNode } from "react";
-import type { CreateUserType } from "~/shared/types/create-user-type";
+import type { CreateUserRequest } from "~/lib/sdk/models";
 import type { UserType } from "~/shared/types/user-type";
 import { getCurrentUser } from "~/shared/api/api.user";
 import {
     getAccessToken,
     removeAccessToken,
+    removeRefreshToken,
 } from "~/shared/utils/token";
 import {
     AuthService,
@@ -31,8 +32,8 @@ interface AuthContextType {
     setLoading: (loading: boolean) => void;
     setUser: (user: UserType | null) => void;
     setIsAuthenticated: (authenticated: boolean) => void;
-    register: (userData: CreateUserType) => Promise<void>;
-    login: (email: string, password: string) => Promise<void>;
+    register: (userData: CreateUserRequest) => Promise<boolean>;
+    login: (email: string, password: string) => Promise<boolean>;
     logout: () => Promise<void>;
     checkAuth: () => Promise<void>;
     incrementFollowingCount: () => void;
@@ -60,8 +61,10 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             if (!response.success) {
                 setErrorMessage(response.message ?? "Login failed.");
-                setErrors(response.errors ?? null);
-                return; // Exit early
+                // Backend errors can be { field, error }[] or string[] — render both.
+                const raw = response.errors as unknown;
+                setErrors(Array.isArray(raw) ? raw.map((e) => typeof e === "string" ? e : (e as { error?: string })?.error ?? JSON.stringify(e)) : null);
+                return false;
             }
 
             const currentUser = response.data?.user;
@@ -69,14 +72,16 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             setUser(currentUser);
             setIsAuthenticated(true);
+            return true;
         } catch (err: any) {
             setErrorMessage(err.message || "Login error");
+            return false;
         } finally {
             setLoading(false);
         }
     }, []);
 
-    const register = useCallback(async (userData: CreateUserType) => {
+    const register = useCallback(async (userData: CreateUserRequest) => {
         setLoading(true);
         setErrorMessage(null);
         setErrors(null);
@@ -85,8 +90,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             if (!response.success) {
                 setErrorMessage(response.message ?? "Registration failed.");
-                setErrors(response.errors ?? null);
-                return;
+                const raw = response.errors as unknown;
+                setErrors(Array.isArray(raw) ? raw.map((e) => typeof e === "string" ? e : (e as { error?: string })?.error ?? JSON.stringify(e)) : null);
+                return false;
             }
 
             const currentUser = response.data?.user;
@@ -94,8 +100,10 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             setUser(currentUser);
             setIsAuthenticated(true);
+            return true;
         } catch (err: any) {
             setErrorMessage(err.message || "Registration error");
+            return false;
         } finally {
             setLoading(false);
         }
@@ -117,6 +125,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
             setIsAuthenticated(true);
         } catch {
             removeAccessToken();
+            removeRefreshToken();
             setUser(null);
             setIsAuthenticated(false);
         } finally {

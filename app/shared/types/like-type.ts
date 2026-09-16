@@ -9,6 +9,8 @@ export interface LikeType {
 export interface LikeUserType {
     id: string;
     userName: string;
+    firstName?: string;
+    lastName?: string;
     birthDate: Date;
     profileImageUrl: string;
     coverImageUrl: string;

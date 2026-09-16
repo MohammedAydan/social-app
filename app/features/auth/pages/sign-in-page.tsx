@@ -6,7 +6,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import Loading from "~/shared/components/loading";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -15,6 +15,7 @@ const formSchema = z.object({
 
 const SignInPage = () => {
   const { initialLoading, isLoading, login, errorMessage, errors } = useAuth();
+  const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -24,14 +25,8 @@ const SignInPage = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      await login(values.email, values.password);
-      if (process.env.NODE_ENV === "development") console.log(values);
-    } catch (error) {
-      // console.error("Login failed", error);
-      form.setError("email", { message: "Invalid email or password" });
-      form.setError("password", { message: "Invalid email or password" });
-    }
+    const ok = await login(values.email, values.password);
+    if (ok) navigate("/", { replace: true });
   };
 
   const isFormLoading = isLoading || initialLoading;

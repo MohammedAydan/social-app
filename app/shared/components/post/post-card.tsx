@@ -10,17 +10,17 @@ const PostCard = ({ post }: { post: PostType }) => {
     return (
         <PostProvider initialPostData={post} key={post.id}>
             <div className="w-full max-w-3xl my-4">
-                <Card className='w-full shadow-xs'>
-                    <CardHeader className='md:px-6 px-3'>
+                <Card className='w-full shadow-xs hover:shadow-md transition-shadow duration-200'>
+                    <CardHeader className='md:px-6 px-3 pb-3'>
                         <PostHeader />
                     </CardHeader>
 
-                    <CardContent className="flex flex-col gap-2 w-full md:px-6 px-3">
+                    <CardContent className="flex flex-col gap-2 w-full md:px-6 px-3 pt-0">
                         <PostContent />
                         {(post.parentPostId != null && post.parentPost != null) && (<SharingPostCard post={post.parentPost} />)}
                     </CardContent>
 
-                    <CardFooter className='w-full md:px-6 px-3'>
+                    <CardFooter className='w-full md:px-6 px-3 pt-3 border-t border-border/60'>
                         <PostFooter />
                     </CardFooter>
                 </Card>

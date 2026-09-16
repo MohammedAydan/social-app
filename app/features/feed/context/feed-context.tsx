@@ -21,6 +21,7 @@ interface FeedContextProps {
   fetchNext: () => Promise<void>;
   addPostLocal: (post: PostType) => void;
   deletePostLocal: (postId: string) => void;
+  updatePostLocal: (post: PostType) => void;
 }
 
 const initialContext: FeedContextProps = {
@@ -29,18 +30,11 @@ const initialContext: FeedContextProps = {
   isLoadingMore: false,
   hasMore: true,
   error: null,
-  fetch: async () => {
-    throw new Error("FeedContext not initialized");
-  },
-  fetchNext: async () => {
-    throw new Error("FeedContext not initialized");
-  },
-  addPostLocal: () => {
-    throw new Error("FeedContext not initialized");
-  },
-  deletePostLocal: () => {
-    throw new Error("FeedContext not initialized");
-  },
+  fetch: async () => {},
+  fetchNext: async () => {},
+  addPostLocal: () => {},
+  deletePostLocal: () => {},
+  updatePostLocal: () => {},
 };
 
 export const FeedContext = createContext<FeedContextProps>(initialContext);
@@ -63,7 +57,7 @@ export const FeedProvider = ({ children }: FeedProviderProps) => {
 
     try {
       const response = await getFeed(1, PAGE_LIMIT);
-      if (!response.success) throw new Error("Failed to fetch feed");
+      if (!response.success) throw new Error(response.message || "Failed to fetch feed");
 
       const data = response.data || [];
       setPosts(data);
@@ -85,10 +79,14 @@ export const FeedProvider = ({ children }: FeedProviderProps) => {
     try {
       const nextPage = currentPage + 1;
       const response = await getFeed(nextPage, PAGE_LIMIT);
-      if (!response.success) throw new Error("Failed to fetch more posts");
+      if (!response.success) throw new Error(response.message || "Failed to fetch more posts");
 
       const newPosts = response.data || [];
-      setPosts(prev => [...prev, ...newPosts]);
+      // De-duplicate by id: concurrent inserts can shift page boundaries.
+      setPosts(prev => {
+        const seen = new Set(prev.map(p => p.id));
+        return [...prev, ...newPosts.filter(p => !seen.has(p.id))];
+      });
       setHasMore(newPosts.length === PAGE_LIMIT);
       setCurrentPage(nextPage);
     } catch (err) {
@@ -108,8 +106,20 @@ export const FeedProvider = ({ children }: FeedProviderProps) => {
     setPosts(prev => prev.filter(p => p.id !== postId));
   }, []);
 
+  const updatePostLocal = useCallback((post: PostType) => {
+    setPosts(prev => prev.map(p => (p.id === post.id ? { ...p, ...post } : p)));
+  }, []);
+
   useEffect(() => {
     fetch();
+  }, [fetch]);
+
+  // Block/unblock changes server-side feed filtering (§2.3) but this context
+  // holds local state — refetch when block caches are invalidated.
+  useEffect(() => {
+    const onRefresh = () => fetch();
+    window.addEventListener("feed:refresh", onRefresh);
+    return () => window.removeEventListener("feed:refresh", onRefresh);
   }, [fetch]);
 
   const contextValue: FeedContextProps = {
@@ -122,6 +132,7 @@ export const FeedProvider = ({ children }: FeedProviderProps) => {
     fetchNext,
     addPostLocal,
     deletePostLocal,
+    updatePostLocal,
   };
 
   return <FeedContext.Provider value={contextValue}>{children}</FeedContext.Provider>;

@@ -19,7 +19,13 @@ const PostPage = () => {
     }
     const { data, error, isLoading, isPending } = useQuery({
         queryKey: ["post", params?.postId],
-        queryFn: () => getPost(params?.postId ?? "").then(res => res.data),
+        queryFn: async () => {
+            const res = await getPost(params?.postId ?? "");
+            if (!res.success) throw new Error(res.message || "Failed to fetch post");
+            if (!res.data) throw new Error("Post not found");
+            return res.data;
+        },
+        retry: false,
     });
 
     if (isLoading || isPending) {

@@ -1,15 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import type { ChangeEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
-import { CreateMediaRequest, CreatePostType } from './create-post-type';
-import { createPost } from '@/lib/api';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '~/components/ui/dialog';
+import { Input } from '~/components/ui/input';
+import { Textarea } from '~/components/ui/textarea';
+import { Button } from '~/components/ui/button';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '~/components/ui/select';
+import { Label } from '~/components/ui/label';
+import type { CreateMediaRequest, CreatePostRequest } from '~/lib/sdk/models';
+import { createPost } from '~/shared/api/api.posts';
 import { toast } from 'sonner';
 
 interface Props {
@@ -21,12 +22,16 @@ interface Props {
 export const CreatePostDialog = ({ open, onClose, onSuccess }: Props) => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [visibility, setVisibility] = useState('public');
+    const [visibility, setVisibility] = useState('Public');
     const [media, setMedia] = useState<CreateMediaRequest[]>([]);
 
     const { mutate, isPending, error } = useMutation({
-        mutationFn: (post: CreatePostType) => createPost(post),
-        onSuccess: () => {
+        mutationFn: (post: CreatePostRequest) => createPost(post),
+        onSuccess: (response) => {
+            if (!response.success) {
+                toast.error("Error", { description: response.message || 'Failed to create post' });
+                return;
+            }
             toast.success("Success", {
                 description: 'Post created successfully',
             });
@@ -44,13 +49,13 @@ export const CreatePostDialog = ({ open, onClose, onSuccess }: Props) => {
     const addMedia = () => {
         setMedia([
             ...media,
-            { postId: '', name: '', type: 'image', url: '', thumbnailUrl: '' },
+            { name: '', type: 'image', url: '', thumbnailUrl: '' },
         ]);
     };
 
     const updateMediaField = (index: number, field: keyof CreateMediaRequest, value: string) => {
         const updated = [...media];
-        updated[index][field] = value;
+        updated[index] = { ...updated[index], [field]: value };
         setMedia(updated);
     };
 
@@ -62,11 +67,11 @@ export const CreatePostDialog = ({ open, onClose, onSuccess }: Props) => {
         setTitle('');
         setContent('');
         setMedia([]);
-        setVisibility('public');
+        setVisibility('Public');
     };
 
     const handleSubmit = () => {
-        const post: CreatePostType = {
+        const post: CreatePostRequest = {
             title,
             content,
             visibility,
@@ -76,7 +81,7 @@ export const CreatePostDialog = ({ open, onClose, onSuccess }: Props) => {
     };
 
     return (
-        <Dialog open={open} onOpenChange={(isOpen) => {
+        <Dialog open={open} onOpenChange={(isOpen: boolean) => {
             if (!isOpen) {
                 resetForm();
                 onClose();
@@ -99,7 +104,7 @@ export const CreatePostDialog = ({ open, onClose, onSuccess }: Props) => {
                         <Input
                             id="title"
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
                             disabled={isPending}
                         />
                     </div>
@@ -109,7 +114,7 @@ export const CreatePostDialog = ({ open, onClose, onSuccess }: Props) => {
                         <Textarea
                             id="content"
                             value={content}
-                            onChange={(e) => setContent(e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value)}
                             disabled={isPending}
                         />
                     </div>
@@ -125,8 +130,8 @@ export const CreatePostDialog = ({ open, onClose, onSuccess }: Props) => {
                                 <SelectValue placeholder="Select visibility" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="public">Public</SelectItem>
-                                <SelectItem value="private">Private</SelectItem>
+                                <SelectItem value="Public">Public</SelectItem>
+                                <SelectItem value="Private">Private</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -139,12 +144,12 @@ export const CreatePostDialog = ({ open, onClose, onSuccess }: Props) => {
                                     <Input
                                         placeholder="Name"
                                         value={m.name}
-                                        onChange={(e) => updateMediaField(index, 'name', e.target.value)}
+                                        onChange={(e: ChangeEvent<HTMLInputElement>) => updateMediaField(index, 'name', e.target.value)}
                                         disabled={isPending}
                                     />
                                     <Select
                                         value={m.type}
-                                        onValueChange={(value) => updateMediaField(index, 'type', value)}
+                                        onValueChange={(value: string) => updateMediaField(index, 'type', value)}
                                         disabled={isPending}
                                     >
                                         <SelectTrigger className="w-[120px]">
@@ -161,13 +166,13 @@ export const CreatePostDialog = ({ open, onClose, onSuccess }: Props) => {
                                 <Input
                                     placeholder="URL"
                                     value={m.url}
-                                    onChange={(e) => updateMediaField(index, 'url', e.target.value)}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => updateMediaField(index, 'url', e.target.value)}
                                     disabled={isPending}
                                 />
                                 <Input
                                     placeholder="Thumbnail URL"
-                                    value={m.thumbnailUrl}
-                                    onChange={(e) => updateMediaField(index, 'thumbnailUrl', e.target.value)}
+                                    value={m.thumbnailUrl ?? ''}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => updateMediaField(index, 'thumbnailUrl', e.target.value)}
                                     disabled={isPending}
                                 />
                                 <Button

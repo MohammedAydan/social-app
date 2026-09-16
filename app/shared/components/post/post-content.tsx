@@ -1,5 +1,6 @@
 import { useState, type FC } from "react";
 import { Link } from "react-router";
+import { Trash2 } from "lucide-react";
 import type { PostType } from "~/shared/types/post-types";
 import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -7,6 +8,7 @@ import rehypeHighlight from "rehype-highlight";
 import rehypeSanitize from "rehype-sanitize";
 import { MediaScrollArea } from "./media-scroll-area";
 import { usePost } from "~/features/feed/hooks/use-post";
+import { isDeletedPlaceholder } from "~/shared/utils/display-name";
 import "highlight.js/styles/github-dark.css";
 
 const MAX_CONTENT_LENGTH = 300;
@@ -18,27 +20,27 @@ const isValidString = (value: unknown): value is string => {
 const markdownComponents: Components = {
     // Headings
     h1: ({ children }) => (
-        <h1 className="text-3xl font-bold mt-8 mb-4 text-foreground">{children}</h1>
+        <h1 className="text-2xl font-bold mt-4 mb-2 text-foreground">{children}</h1>
     ),
     h2: ({ children }) => (
-        <h2 className="text-2xl font-semibold mt-7 mb-3 text-foreground">{children}</h2>
+        <h2 className="text-xl font-semibold mt-4 mb-2 text-foreground">{children}</h2>
     ),
     h3: ({ children }) => (
-        <h3 className="text-xl font-semibold mt-6 mb-2 text-foreground">{children}</h3>
+        <h3 className="text-lg font-semibold mt-3 mb-1.5 text-foreground">{children}</h3>
     ),
     h4: ({ children }) => (
-        <h4 className="text-lg font-semibold mt-5 mb-2 text-foreground">{children}</h4>
+        <h4 className="text-base font-semibold mt-3 mb-1.5 text-foreground">{children}</h4>
     ),
     h5: ({ children }) => (
-        <h5 className="text-base font-semibold mt-4 mb-2 text-foreground">{children}</h5>
+        <h5 className="text-sm font-semibold mt-2.5 mb-1 text-foreground">{children}</h5>
     ),
     h6: ({ children }) => (
-        <h6 className="text-sm font-semibold mt-3 mb-1 text-foreground">{children}</h6>
+        <h6 className="text-sm font-semibold mt-2 mb-1 text-muted-foreground">{children}</h6>
     ),
 
     // Paragraph
     p: ({ children }) => (
-        <p className="mb-3 leading-relaxed text-muted-foreground">{children}</p>
+        <p className="mb-2.5 leading-relaxed">{children}</p>
     ),
 
     // Links
@@ -51,7 +53,7 @@ const markdownComponents: Components = {
                 to={safeHref}
                 target="_blank"
                 rel="noopener noreferrer nofollow"
-                className="text-blue-600 underline break-all hover:text-blue-400"
+                className="text-primary underline decoration-primary/40 underline-offset-2 break-all hover:decoration-primary"
                 {...rest}
             >
                 {children}
@@ -64,23 +66,23 @@ const markdownComponents: Components = {
         <img
             {...props}
             loading="lazy"
-            className="max-w-full rounded-md my-4"
-            alt={props.alt || ""}
+            className="max-w-full rounded-xl my-3 border border-border"
+            alt={props.alt || "Post image"}
         />
     ),
 
     // Lists
     ul: ({ children }) => (
-        <ul className="list-disc list-inside mb-4">{children}</ul>
+        <ul className="list-disc list-inside mb-2.5 space-y-0.5">{children}</ul>
     ),
     ol: ({ children }) => (
-        <ol className="list-decimal list-inside mb-4">{children}</ol>
+        <ol className="list-decimal list-inside mb-2.5 space-y-0.5">{children}</ol>
     ),
-    li: ({ children }) => <li className="mb-1">{children}</li>,
+    li: ({ children }) => <li className="mb-0.5">{children}</li>,
 
     // Blockquotes
     blockquote: ({ children }) => (
-        <blockquote className="border-l-4 border-blue-500 pl-4 italic text-muted-foreground my-4">
+        <blockquote className="border-l-2 border-primary/50 bg-muted/40 rounded-r-lg px-3 py-2 italic text-muted-foreground my-3 [&>p]:mb-0">
             {children}
         </blockquote>
     ),
@@ -189,6 +191,24 @@ const PostContent: FC<{ post?: PostType }> = ({ post: _post }) => {
     const title: string = isValidString(post?.title) ? post?.title : "";
     const content: string = isValidString(post?.content) ? post?.content : "";
 
+    // Soft-deleted ancestors keep Id/UserId but mask body server-side (§2.1).
+    // Render the placeholder as a muted notice instead of body text.
+    if (!title && isDeletedPlaceholder(content)) {
+        return (
+            <div>
+                <div className="flex items-center gap-2 rounded-xl border border-dashed border-border bg-muted/40 px-4 py-5 text-sm text-muted-foreground">
+                    <Trash2 className="h-4 w-4 shrink-0" />
+                    <span className="italic">This content has been deleted.</span>
+                </div>
+                {Array.isArray(post?.media) && post?.media.length > 0 && (
+                    <div className="space-y-2 pt-2">
+                        <MediaScrollArea media={post?.media} />
+                    </div>
+                )}
+            </div>
+        );
+    }
+
     const contentIsLong = content.length > MAX_CONTENT_LENGTH;
     const displayedContent =
         showFullContent || !contentIsLong
@@ -201,12 +221,10 @@ const PostContent: FC<{ post?: PostType }> = ({ post: _post }) => {
     };
 
     return (
-        <div
-        // className="space-y-4 p-4"
-        >
+        <div className="min-w-0">
             {/* Title */}
             {title && (
-                <div className="space-y-2 font-semibold text-lg text-foreground leading-tight break-words">
+                <div className="font-semibold text-[17px] text-foreground leading-snug break-words [&>*:first-child]:mt-0">
                     <Markdown {...markdownPlugins} components={markdownComponents}>
                         {title}
                     </Markdown>
@@ -215,7 +233,7 @@ const PostContent: FC<{ post?: PostType }> = ({ post: _post }) => {
 
             {/* Content */}
             {content && (
-                <div className="space-y-2 text-sm text-muted-foreground leading-relaxed prose prose-sm dark:prose-invert max-w-none break-words">
+                <div className="text-[15px] text-foreground/85 leading-relaxed prose prose-sm dark:prose-invert max-w-none break-words [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
                     <Markdown {...markdownPlugins} components={markdownComponents}>
                         {displayedContent}
                     </Markdown>
@@ -223,7 +241,7 @@ const PostContent: FC<{ post?: PostType }> = ({ post: _post }) => {
                     {contentIsLong && (
                         <button
                             onClick={() => setShowFullContent((prev) => !prev)}
-                            className="mt-2 text-sm text-blue-500 hover:underline"
+                            className="mt-1.5 text-sm font-medium text-primary hover:underline underline-offset-2"
                         >
                             {showFullContent ? "Show less" : "Show more"}
                         </button>
@@ -234,7 +252,7 @@ const PostContent: FC<{ post?: PostType }> = ({ post: _post }) => {
 
             {/* Media */}
             {Array.isArray(post?.media) && post?.media.length > 0 && (
-                <div className="space-y-2 pt-2">
+                <div className="pt-3">
                     <MediaScrollArea media={post?.media} />
                 </div>
             )}

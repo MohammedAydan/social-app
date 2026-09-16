@@ -1,8 +1,10 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 import { useAuth } from '~/features/auth/hooks/use-auth';
-import { getUserNotifications } from '~/shared/api';
+import { getInbox, getUserNotifications } from '~/shared/api';
+import type { NotificationType } from '~/shared/types/notification-type';
 import { NotificationCard } from '../components/notification-card';
+import { useFollowRequestActions } from '~/features/profile/hooks/use-follow-requests';
 import { useNavigate } from 'react-router';
 
 const PAGE_SIZE = 10;
@@ -34,10 +36,25 @@ const NotificationsPage = () => {
                 throw new Error('User not authenticated');
             }
 
+            // Prefer the smart inbox (ADR-010); fall back to the legacy
+            // per-user endpoint when the server does not expose it yet.
+            try {
+                const inbox = await getInbox({ page: pageParam, limit: PAGE_SIZE });
+                if (inbox.success && inbox.data) {
+                    const items: NotificationType[] = inbox.data.items ?? [];
+                    return {
+                        data: items,
+                        nextPage: items.length === PAGE_SIZE ? pageParam + 1 : undefined,
+                    };
+                }
+            } catch {
+                // fall through to legacy endpoint
+            }
+
             const response = await getUserNotifications(user.id, pageParam, PAGE_SIZE);
 
             if (!response.success) {
-                throw new Error('Failed to load notifications');
+                throw new Error(response.message || 'Failed to load notifications');
             }
 
             return {
@@ -77,6 +94,9 @@ const NotificationsPage = () => {
     // Flatten all notification data
     const notifications = data?.pages.flatMap(page => page.data) || [];
     const hasNotifications = notifications.length > 0;
+
+    // Inbound follow-request decisions (accept/decline from notification cards).
+    const { accept: acceptFollowRequest, decline: declineFollowRequest } = useFollowRequestActions();
 
     // Loading state
     if (isAuthLoading || isLoading) {
@@ -133,7 +153,8 @@ const NotificationsPage = () => {
                             <NotificationCard
                                 key={notification.id}
                                 notification={notification}
-
+                                onAcceptRequest={acceptFollowRequest}
+                                onRejectRequest={declineFollowRequest}
                             />
                         ))}
                     </div>

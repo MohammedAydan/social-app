@@ -14,6 +14,7 @@ import { Link, useNavigate } from 'react-router';
 import { Button } from '~/components/ui/button';
 import { cn, formatRelativeTime } from '~/lib/utils';
 import UserAvatar from '~/shared/components/user-avatar';
+import { getDisplayName } from '~/shared/utils/display-name';
 import type { NotificationType } from '~/shared/types/notification-type';
 
 // Icon mapping
@@ -79,6 +80,8 @@ interface NotificationCardProps {
 export function NotificationCard({
     notification,
     className,
+    onAcceptRequest,
+    onRejectRequest,
     onViewPost,
     onViewComment,
 }: NotificationCardProps) {
@@ -105,17 +108,38 @@ export function NotificationCard({
             case 'comment-reply':
                 if (notification.commentId) {
                     onViewComment?.(notification.commentId);
-                    navigate(`/comment/${notification.commentId}`);
+                    navigate(`/post/${notification.postId ?? ''}`);
                 }
                 break;
             case 'follow':
             case 'follow-request':
-                navigate(`/profile/${notification.senderUser.id}`);
+                if (notification.senderUser?.id ?? notification.followerId) {
+                    navigate(`/profile/${notification.senderUser?.id ?? notification.followerId}`);
+                }
                 break;
             default:
                 break;
         }
     };
+
+    const senderName = notification.senderUser
+        ? getDisplayName(notification.senderUser)
+        : (notification.lastActorName?.trim() || "Someone");
+    const senderAvatar = notification.senderUser?.profileImageUrl ?? notification.imageUrl ?? "";
+    // Inbox follow-requests carry the requester in `userId` (senderUser and
+    // followerId are null there — verified live 2026-09-17); the pending
+    // endpoint uses `followerId`. Without this fallback the Accept/Decline
+    // buttons never render on inbox cards.
+    const requesterId =
+        notification.senderUser?.id ??
+        notification.followerId ??
+        (notification.type === "follow-request" ? notification.userId : undefined);
+    // Inbound follow request awaiting my decision (API_REFERENCE §5).
+    const isFollowRequest = notification.type === "follow-request" && !!requesterId;
+    // Messages arrive aggregated ("X and N others ..."); never crash on odd shapes.
+    const messageBody = typeof notification.message === "string"
+        ? notification.message.replace(/^\S+\s/, "")
+        : "";
 
     return (
         <div className={cn("w-full", className)}>
@@ -145,20 +169,51 @@ export function NotificationCard({
                                 className="flex items-center gap-2"
                                 onClick={(e) => {
                                     e.stopPropagation(); // prevent triggering card click
-                                    navigate(`/profile/${notification.senderUser.id}`);
+                                    const targetId = notification.senderUser?.id ?? notification.followerId;
+                                    if (targetId) navigate(`/profile/${targetId}`);
                                 }}
                             >
                                 <UserAvatar
-                                    url={notification?.senderUser?.profileImageUrl}
-                                    username={notification?.senderUser?.userName}
+                                    url={senderAvatar}
+                                    username={notification.senderUser?.userName}
+                                    displayName={senderName}
                                 />
                                 <span className="text-sm font-medium hover:underline">
-                                    {notification.senderUser.userName}
+                                    {senderName}
+                                    {notification.actorCount != null && notification.actorCount > 1 && (
+                                        <span className="text-muted-foreground"> +{notification.actorCount - 1}</span>
+                                    )}
                                 </span>
                                 <span className="text-sm text-muted-foreground">
-                                    {notification.message.split(notification.message.split(" ")[0])[1]}
+                                    {messageBody}
                                 </span>
                             </div>
+                            {isFollowRequest && (onAcceptRequest || onRejectRequest) && (
+                                <div
+                                    className="flex gap-2 pt-1"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    {onAcceptRequest && (
+                                        <Button
+                                            size="sm"
+                                            onClick={() => onAcceptRequest(requesterId as string)}
+                                        >
+                                            <CheckCircle className="mr-1 h-4 w-4" />
+                                            Accept
+                                        </Button>
+                                    )}
+                                    {onRejectRequest && (
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => onRejectRequest(requesterId as string)}
+                                        >
+                                            <XCircle className="mr-1 h-4 w-4" />
+                                            Decline
+                                        </Button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

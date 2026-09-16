@@ -4,8 +4,8 @@ import {
 } from "~/shared/api";
 import type { ApiResponse } from "~/shared/api/api.response";
 import type { AuthResponseType } from "~/shared/types/auth-response-type";
-import type { CreateUserType } from "~/shared/types/create-user-type";
-import type { SignInType } from "~/shared/types/sign-in-type";
+import type { CreateUserRequest, SignIn } from "~/lib/sdk/models";
+import { postApiUserLogout } from "~/lib/sdk/endpoints/user/user";
 import {
     saveAccessToken,
     removeAccessToken,
@@ -14,13 +14,13 @@ import {
 } from "~/shared/utils/token";
 
 export interface IAuthService {
-    signIn(data: SignInType): Promise<ApiResponse<AuthResponseType>>;
-    register(data: CreateUserType): Promise<ApiResponse<AuthResponseType>>;
+    signIn(data: SignIn): Promise<ApiResponse<AuthResponseType>>;
+    register(data: CreateUserRequest): Promise<ApiResponse<AuthResponseType>>;
     signOut(): Promise<void>;
 }
 
 export class AuthService implements IAuthService {
-    async signIn(signInData: SignInType): Promise<ApiResponse<AuthResponseType>> {
+    async signIn(signInData: SignIn): Promise<ApiResponse<AuthResponseType>> {
         const response = await signInUser(signInData);
 
         if (response.success && response.data?.accessToken) {
@@ -31,7 +31,7 @@ export class AuthService implements IAuthService {
         return response;
     }
 
-    async register(registerData: CreateUserType): Promise<ApiResponse<AuthResponseType>> {
+    async register(registerData: CreateUserRequest): Promise<ApiResponse<AuthResponseType>> {
         const response = await registerUser(registerData);
 
         if (response.success && response.data?.accessToken) {
@@ -43,7 +43,13 @@ export class AuthService implements IAuthService {
     }
 
     async signOut(): Promise<void> {
-        removeAccessToken();
-        removeRefreshToken();
+        try {
+            await postApiUserLogout();
+        } catch {
+            // Best-effort: clear local state even when offline/expired.
+        } finally {
+            removeAccessToken();
+            removeRefreshToken();
+        }
     }
 }
