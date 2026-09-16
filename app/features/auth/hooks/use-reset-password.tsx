@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { resetPassword } from "~/shared/api";
 
@@ -12,15 +12,13 @@ export const useResetPassword = ({ tokenFromParams, emailFromParams }: { tokenFr
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [errors, setErrors] = useState<string[] | null>(null);
-    const navigate = useNavigate();
+    const router = useRouter();
 
     useEffect(() => {
         setToken(tokenFromParams || "");
         setEmail(emailFromParams || "");
         if (!tokenFromParams || !emailFromParams) {
-            navigate("/sign-in", {
-                replace: true,
-            });
+            router.replace("/sign-in");
         }
     }, [tokenFromParams, emailFromParams]);
 
@@ -114,9 +112,7 @@ export const useResetPassword = ({ tokenFromParams, emailFromParams }: { tokenFr
             if (response.success === true) {
                 setSubmitted(true);
                 toast.success("Password reset successful!", { description: "Your password has been reset. You can now sign in with your new password." });
-                navigate("/sign-in", {
-                    replace: true,
-                });
+                router.replace("/sign-in");
             } else {
                 setError(response.message || "Unable to reset password. Please try again later.");
                 toast.error("Reset failed", { description: response.message || "Unable to reset password. Please try again later." });

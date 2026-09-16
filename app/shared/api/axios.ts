@@ -4,8 +4,8 @@ import { accessTokenKey, refreshTokenKey } from "../utils/strings";
 import type { ApiResponse } from "./api.response";
 import type { AuthResponseType } from "../types/auth-response-type";
 
-const apiUrl = import.meta.env.VITE_API_BASE_URL;
-const apiKey = import.meta.env.VITE_API_KEY;
+const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.VITE_API_BASE_URL;
+const apiKey = process.env.NEXT_PUBLIC_API_KEY ?? process.env.VITE_API_KEY;
 
 const api = axios.create({
   baseURL: apiUrl,

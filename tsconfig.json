@@ -14,8 +14,7 @@
       "WebWorker"
     ],
     "types": [
-      "node",
-      "vite/client"
+      "node"
     ],
     "target": "ES2022",
     "module": "esnext",
@@ -47,12 +46,7 @@
   },
   "exclude": [
     "node_modules",
-    ".react-router",
-    "build",
-    "app/root.tsx",
-    "app/routes.ts",
-    "app/routes",
-    "vite.config.ts",
-    "react-router.config.ts"
+    ".next",
+    "build"
   ]
 }

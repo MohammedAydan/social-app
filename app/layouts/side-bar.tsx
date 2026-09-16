@@ -8,7 +8,7 @@ import {
     Menu,
     X
 } from 'lucide-react';
-import { Link } from 'react-router';
+import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
 import {
@@ -62,25 +62,25 @@ const SideBar = () => {
 
                 {/* Top Icons */}
                 <div className="flex flex-col mt-16 pb-16">
-                    <Link to="/post/add" onClick={handleClose}>
+                    <Link href="/add-post" onClick={handleClose}>
                         <Button className="w-10 h-10 rounded-full bg-primary mb-4 flex justify-center items-center">
                             <Plus size={20} />
                         </Button>
                     </Link>
 
-                    <Link to="/" onClick={handleClose}>
+                    <Link href="/" onClick={handleClose}>
                         <Button className="w-10 h-10 rounded-full bg-foreground/50 mb-4 flex justify-center items-center">
                             <Home size={20} />
                         </Button>
                     </Link>
 
-                    <Link to="/notifications" onClick={handleClose}>
+                    <Link href="/notifications" onClick={handleClose}>
                         <Button className="w-10 h-10 rounded-full bg-foreground/50 mb-4 flex justify-center items-center">
                             <Bell size={20} />
                         </Button>
                     </Link>
 
-                    <Link to="/search" onClick={handleClose}>
+                    <Link href="/search" onClick={handleClose}>
                         <Button className="w-10 h-10 rounded-full bg-foreground/50 mb-4 flex justify-center items-center">
                             <Search size={20} />
                         </Button>
@@ -105,7 +105,7 @@ const SideBar = () => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="start">
-                                <Link to="/profile" onClick={handleClose}>
+                                <Link href="/profile" onClick={handleClose}>
                                     <DropdownMenuItem>
                                         <UserRound className="mr-2" />
                                         Profile

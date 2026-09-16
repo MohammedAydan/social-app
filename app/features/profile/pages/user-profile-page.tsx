@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useParams } from "react-router";
+import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "~/features/auth/hooks/use-auth";
-import Profile from "~/routes/profile";
+import ProfilePage from "./profile-page";
 import { getUserProfile } from "~/shared/api";
 import type { UserType } from "~/shared/types/user-type";
 import ProfileHeader from "../components/profile-header";
@@ -11,16 +11,17 @@ import LoadingProfileHeader from "../components/loading-profile";
 
 const UserProfilePage = () => {
   const { userId } = useParams();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user: authUser } = useAuth();
+  const profileId = Array.isArray(userId) ? userId[0] : userId;
   const { data: user, isError, isLoading } = useQuery<UserType | null>({
-    queryKey: ["user-profile", userId],
-    queryFn: () => getUserProfile(userId ?? "").then((res) => res.data ?? null),
+    queryKey: ["user-profile", profileId],
+    queryFn: () => getUserProfile(profileId ?? "").then((res) => res.data ?? null),
     enabled: !!userId
   });
 
   if (!userId || isError) {
-    navigate("/404");
+    router.replace("/404");
     return null;
   }
 
@@ -35,12 +36,12 @@ const UserProfilePage = () => {
   }
 
   if (!user) {
-    navigate("/404");
+    router.replace("/404");
     return null;
   }
 
   if (user.id == authUser?.id) {
-    return <Profile />
+    return <ProfilePage />
   }
 
   return (

@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { useAuth } from "~/features/auth/hooks/use-auth";
 import { ModeToggle } from "./mode-toggle";
@@ -11,7 +11,7 @@ const Header = () => {
         <header className="fixed top-0 left-0 right-0 z-50 w-full h-16 px-4 md:px-8 flex items-center justify-between border-b border-border bg-background/80 backdrop-blur-lg shadow-md transition-colors">
             {/* Logo / Branding */}
             <Link
-                to="/"
+                href="/"
                 className="flex items-center gap-2 group"
                 aria-label="Home"
             >
@@ -27,7 +27,7 @@ const Header = () => {
             <nav className="flex items-center gap-2 md:gap-4">
                 {!isAuthenticated && (
                     <div className="flex items-center gap-2 md:gap-4">
-                        <Link to="/sign-in" aria-label="Sign In">
+                        <Link href="/sign-in" aria-label="Sign In">
                             <Button
                                 variant="default"
                                 className="flex items-center gap-2 px-4 py-2 md:px-6 text-base font-semibold rounded-lg shadow-sm transition-all"
@@ -36,7 +36,7 @@ const Header = () => {
                                 <LogIn className="inline sm:hidden" size={20} />
                             </Button>
                         </Link>
-                        <Link to="/register" aria-label="Register">
+                        <Link href="/register" aria-label="Register">
                             <Button
                                 variant="outline"
                                 className="flex items-center gap-2 px-4 py-2 md:px-6 border-primary/40 text-base font-semibold rounded-lg hover:bg-primary/10 transition-all"
