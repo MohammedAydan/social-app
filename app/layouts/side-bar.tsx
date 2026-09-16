@@ -45,7 +45,8 @@ const SideBar = () => {
             )}
 
             {/* Sidebar */}
-            <div
+            <aside
+                aria-label="Primary navigation"
                 className={`
           fixed top-0 left-0 h-screen w-16 p-3 border-r border-border  bg-background/5 backdrop-blur-xl
           flex flex-col justify-between items-center z-20
@@ -122,7 +123,7 @@ const SideBar = () => {
                         </DropdownMenu>
                     )}
                 </div>
-            </div>
+            </aside>
         </>
     );
 };
