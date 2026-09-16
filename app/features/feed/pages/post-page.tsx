@@ -1,5 +1,7 @@
-import { useParams } from "react-router";
-import { getPost } from "~/shared/api";
+"use client";
+
+import { useParams } from "next/navigation";
+import { apiClient } from "~/sdk/api-client";
 import { PostProvider } from "../context/post-context";
 import { CommentsProvider } from "../context/comments-context";
 import PostCard from "~/shared/components/post/post-card";
@@ -13,13 +15,14 @@ import LoadingPost from "~/shared/components/post/loading-post";
 import CommentsSection from "~/features/feed/components/comments-sections";
 
 const PostPage = () => {
-    const params = useParams();
-    if (!params.postId) {
+    const { postId } = useParams<{ postId: string }>();
+    if (!postId) {
         return "not found"
     }
     const { data, error, isLoading, isPending } = useQuery({
-        queryKey: ["post", params?.postId],
-        queryFn: () => getPost(params?.postId ?? "").then(res => res.data),
+        queryKey: ["post", postId],
+        queryFn: () => apiClient.get<import("~/shared/types/post-types").PostType>(`/api/Posts/${encodeURIComponent(postId)}`),
+        enabled: Boolean(postId),
     });
 
     if (isLoading || isPending) {
