@@ -6,7 +6,7 @@ import {
     type KeyboardEvent,
 } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Link } from "react-router";
+import Link from "next/link";
 import { BadgeCheck, User } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
@@ -198,7 +198,7 @@ const UserCard = ({ user }: { user: UserType }) => {
                         </p>
                     )}
                 </div>
-                <Link to={`/profile/${user.id}`}>
+                <Link href={`/profile/${user.id}`}>
                     <Button
                         variant="outline"
                         size="sm"

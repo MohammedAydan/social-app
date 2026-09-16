@@ -3,20 +3,20 @@ import { useCallback, useEffect } from 'react';
 import { useAuth } from '~/features/auth/hooks/use-auth';
 import { getUserNotifications } from '~/shared/api';
 import { NotificationCard } from '../components/notification-card';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'next/navigation';
 
 const PAGE_SIZE = 10;
 const SCROLL_THRESHOLD = 200;
 
 const NotificationsPage = () => {
     const { user, isLoading: isAuthLoading } = useAuth();
-    const navigate = useNavigate();
+    const router = useRouter();
 
     useEffect(() => {
         if (!isAuthLoading && !user) {
-            navigate('/login');
+            router.push('/sign-in');
         }
-    }, [user, isAuthLoading, navigate]);
+    }, [user, isAuthLoading, router]);
 
     const {
         data,

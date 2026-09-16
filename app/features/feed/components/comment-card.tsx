@@ -16,7 +16,7 @@ import {
 } from "~/components/ui/dialog";
 import DeleteComment from "./delete-comment";
 import { useAuth } from "~/features/auth/hooks/use-auth";
-import { Link } from "react-router";
+import Link from "next/link";
 
 const CommentCard = ({ comment }: { comment: CommentType }) => {
     const [replySection, setReplySection] = useState(false);
@@ -25,7 +25,7 @@ const CommentCard = ({ comment }: { comment: CommentType }) => {
     return (
         <Card className="w-fit border-0 shadow-none bg-transparent p-4 transition-all hover:bg-muted/50 z-0">
             <div className="flex items-start gap-4">
-                <Link to={`/profile/${comment.userId}`}>
+                <Link href={`/profile/${comment.userId}`}>
                     <UserAvatar
                         size={48}
                         url={comment?.user?.profileImageUrl}
@@ -35,7 +35,7 @@ const CommentCard = ({ comment }: { comment: CommentType }) => {
                 <div className="flex-1 space-y-2">
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center justify-between gap-4">
-                            <Link to={`/profile/${comment.userId}`}>
+                            <Link href={`/profile/${comment.userId}`}>
                                 <h4 className="font-semibold text-foreground text-sm tracking-tight flex items-center gap-2">
                                     {comment?.user?.userName} {comment?.user?.isVerified && (<BadgeCheck className="text-primary" size={20} />)}
                                 </h4>

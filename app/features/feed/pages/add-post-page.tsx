@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { Label } from '~/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
 import type { CreateMediaRequest, CreatePostType } from '~/shared/types/create-post-type';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'next/navigation';
 import { createPost } from '~/shared/api';
 import { Button } from '~/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
@@ -45,7 +45,7 @@ export default function AddPostPage() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [visibility, setVisibility] = useState<'public' | 'private'>('public');
-    const navigate = useNavigate();
+    const router = useRouter();
     const { media, setMedia, isLoading } = useManageMedia();
 
 
@@ -56,7 +56,7 @@ export default function AddPostPage() {
                 description: 'Post created successfully',
             });
             resetForm();
-            navigate("/");
+            router.push("/");
         },
         onError: (error) => {
             toast.error('Error', {

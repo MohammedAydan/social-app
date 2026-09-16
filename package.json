@@ -39,7 +39,6 @@
     "rehype-highlight": "^7.0.2",
     "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.1",
-    "social-app": "file:",
     "sonner": "^2.0.3",
     "tailwind-merge": "^3.3.0",
     "video.js": "^8.23.4",
@@ -52,8 +51,6 @@
     "@types/react-dom": "^19.1.2",
     "tailwindcss": "^4.1.4",
     "tw-animate-css": "^1.2.9",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.3",
-    "vite-tsconfig-paths": "^5.1.4"
+    "typescript": "^5.8.3"
   }
 }

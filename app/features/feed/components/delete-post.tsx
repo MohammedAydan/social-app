@@ -13,12 +13,12 @@ import {
 import { DropdownMenuItem } from '~/components/ui/dropdown-menu';
 import Loading from '~/shared/components/loading';
 import { usePost } from '../hooks/use-post';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'next/navigation';
 
 const DeletePost = ({ isNavigate = false }: { isNavigate?: boolean }) => {
     const { deletePostHandler, deletePostLoading } = usePost();
     const [open, setOpen] = useState(false);
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const handleDelete = async () => {
         try {
@@ -26,7 +26,7 @@ const DeletePost = ({ isNavigate = false }: { isNavigate?: boolean }) => {
             setOpen(false);
 
             if (isNavigate) {
-                navigate("/");
+                router.push("/");
             }
         } catch (error) {
             // console.error('Failed to delete post', error);

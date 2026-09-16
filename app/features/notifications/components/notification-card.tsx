@@ -10,7 +10,8 @@ import {
     XCircle,
 } from 'lucide-react';
 
-import { Link, useNavigate } from 'react-router';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '~/components/ui/button';
 import { cn, formatRelativeTime } from '~/lib/utils';
 import UserAvatar from '~/shared/components/user-avatar';
@@ -82,7 +83,7 @@ export function NotificationCard({
     onViewPost,
     onViewComment,
 }: NotificationCardProps) {
-    const navigate = useNavigate();
+    const router = useRouter();
 
     const Icon =
         NOTIFICATION_ICONS[notification.type as keyof typeof NOTIFICATION_ICONS] ||
@@ -99,18 +100,18 @@ export function NotificationCard({
             case 'share':
                 if (notification.postId) {
                     onViewPost?.(notification.postId);
-                    navigate(`/post/${notification.postId}`);
+                    router.push(`/post/${notification.postId}`);
                 }
                 break;
             case 'comment-reply':
                 if (notification.commentId) {
                     onViewComment?.(notification.commentId);
-                    navigate(`/comment/${notification.commentId}`);
+                    router.push(`/comment/${notification.commentId}`);
                 }
                 break;
             case 'follow':
             case 'follow-request':
-                navigate(`/profile/${notification.senderUser.id}`);
+                router.push(`/profile/${notification.senderUser.id}`);
                 break;
             default:
                 break;
@@ -145,7 +146,7 @@ export function NotificationCard({
                                 className="flex items-center gap-2"
                                 onClick={(e) => {
                                     e.stopPropagation(); // prevent triggering card click
-                                    navigate(`/profile/${notification.senderUser.id}`);
+                                    router.push(`/profile/${notification.senderUser.id}`);
                                 }}
                             >
                                 <UserAvatar
