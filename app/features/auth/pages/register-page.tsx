@@ -1,3 +1,5 @@
+"use client";
+
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,7 +16,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
-import { Link } from "react-router";
+import Link from "next/link";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 
 // ✅ Validation schema
@@ -206,7 +208,7 @@ const Register = () => {
 
                 <div className="text-center">
                     <Link
-                        to="/sign-in"
+                        href="/sign-in"
                         className="block mt-4 text-sm text-muted-foreground hover:underline"
                     >
                         Already have an account? Sign in
