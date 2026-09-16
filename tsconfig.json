@@ -51,6 +51,8 @@
     "build",
     "app/root.tsx",
     "app/routes.ts",
-    "app/routes"
+    "app/routes",
+    "vite.config.ts",
+    "react-router.config.ts"
   ]
 }
