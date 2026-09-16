@@ -1,3 +1,5 @@
+"use client";
+
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +8,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import Loading from "~/shared/components/loading";
-import { Link } from "react-router";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -132,7 +134,7 @@ const SignInPage = () => {
                 className="w-full py-5"
                 aria-label="Register button"
               >
-                <Link to="/register">Register</Link>
+                <Link href="/register">Register</Link>
               </Button>
               <Button
                 asChild
@@ -141,7 +143,7 @@ const SignInPage = () => {
                 className="w-full py-5 text-primary hover:text-primary/80 hover:bg-muted transition-all duration-200"
                 aria-label="Forgot password link"
               >
-                <Link to="/forgot-password">Forgot Password?</Link>
+                <Link href="/forgot-password">Forgot Password?</Link>
               </Button>
             </div>
           </div>
