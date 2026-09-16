@@ -47,12 +47,10 @@ const SearchPage = () => {
         queryKey: ["searchResults", debouncedQuery],
         queryFn: ({ pageParam = 1 }) =>
             searchUsers(debouncedQuery, pageParam, DEFAULT_PAGE_SIZE, { userId: user?.id ?? null }).then(
-                (res) => res.data
+                (res) => res.data ?? []
             ),
-        getNextPageParam: (lastPage) =>
-            lastPage.currentPage < lastPage.totalPages
-                ? lastPage.currentPage + 1
-                : undefined,
+        getNextPageParam: (lastPage, allPages) =>
+            lastPage.length === DEFAULT_PAGE_SIZE ? allPages.length + 1 : undefined,
         initialPageParam: 1,
         enabled: debouncedQuery.length > 0,
     });
