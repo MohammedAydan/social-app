@@ -1,13 +1,4 @@
-// api/api.likes.ts
-import api from "./axios";
-import { handleRequest } from "./api.handle-request";
+import { sdkGet, sdkPost, pageParams } from "~/sdk/endpoints";
 
-export const likePost = (postId: string) =>
-    handleRequest(api.post("/api/Like", { postId }));
-
-export const getPostLikes = (postId: string, page = 1, limit = 20) =>
-    handleRequest(
-        api.get(`/api/Like/${postId}`, {
-            params: { page, limit },
-        })
-    );
+export const likePost = (postId: string) => sdkPost("/api/Like", { postId });
+export const getPostLikes = (postId: string, page = 1, limit = 20) => sdkGet(`/api/Like/${postId}`, pageParams(page, limit));
