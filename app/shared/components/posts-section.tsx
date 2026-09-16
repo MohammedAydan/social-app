@@ -1,4 +1,6 @@
-import React, { useEffect, useCallback } from 'react';
+"use client";
+
+import React, { useEffect } from 'react';
 import { useFeed } from '~/features/feed/hooks/use-feed';
 import LoadingPost from './post/loading-post';
 import PostCard from './post/post-card';
@@ -39,7 +41,8 @@ const PostsSection = () => {
             <div className="flex flex-col items-center justify-center h-screen py-6 pt-20 md:pl-16 pl-0">
                 <p className="text-red-500">{error}</p>
                 <button
-                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-2xl"
+                    type="button"
+                    className="mt-4 rounded-xl bg-primary px-4 py-2 text-primary-foreground transition-colors hover:bg-primary/90"
                     onClick={() => window.location.reload()}
                 >
                     Retry
