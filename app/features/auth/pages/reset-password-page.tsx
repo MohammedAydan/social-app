@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -8,10 +9,9 @@ import { Separator } from "~/components/ui/separator";
 import { useResetPassword } from "../hooks/use-reset-password";
 
 const ResetPasswordPage = () => {
-    // Get email and token from URL query params
-    const params = new URLSearchParams(window.location.search);
-    const emailParam = params.get("email") || "";
-    const tokenParam = params.get("token") || "";
+    const searchParams = useSearchParams();
+    const emailParam = searchParams.get("email") || "";
+    const tokenParam = searchParams.get("token") || "";
     const {
         email,
         loading,
