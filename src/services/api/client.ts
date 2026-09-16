@@ -15,9 +15,13 @@ function buildUrl(baseUrl: string, path: string, query?: RequestOptions["query"]
 
 async function request<T>(baseUrl: string, apiKey: string | undefined, path: string, options: RequestOptions = {}) {
   const { query, body, headers, ...init } = options;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15_000);
+
   try {
     const response = await fetch(buildUrl(baseUrl, path, query), {
       ...init,
+      signal: init.signal ?? controller.signal,
       headers: {
         Accept: "application/json",
         ...(body === undefined ? {} : { "Content-Type": "application/json" }),
@@ -37,7 +41,12 @@ async function request<T>(baseUrl: string, apiKey: string | undefined, path: str
 
     return payload as T;
   } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new ApiError("Request timed out", "NETWORK_ERROR");
+    }
     throw toApiError(error);
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
