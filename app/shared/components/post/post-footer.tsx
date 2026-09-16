@@ -1,14 +1,14 @@
 import ActionButton from './action-button'
 import { MessageCircle } from 'lucide-react'
 import LikeActionButton from './like-action-button'
-import { useNavigate } from 'react-router'
+import { useRouter } from 'next/navigation'
 import type { PostType } from '~/shared/types/post-types'
 import { usePost } from '~/features/feed/hooks/use-post'
 import SharePostButton from '~/features/feed/components/share-post-button'
 
 const PostFooter = () => {
     const { post } = usePost();
-    const navigate = useNavigate();
+    const router = useRouter();
 
     return (
         <div className='w-full flex justify-between gap-2'>
@@ -18,7 +18,7 @@ const PostFooter = () => {
                     strokeWidth={2.5}
                     className='text-primary'
                 />}
-                onClick={() => navigate(`/post/${post?.id}`)}
+                onClick={() => router.push(`/post/${post?.id}`)}
                 text={`(${post?.commentsCount})`}
             />
             <SharePostButton count={post?.shareingsCount ?? 0} />

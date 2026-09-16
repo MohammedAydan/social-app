@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { FeedProvider } from '../context/feed-context';
 import PostsSection from '~/shared/components/posts-section';

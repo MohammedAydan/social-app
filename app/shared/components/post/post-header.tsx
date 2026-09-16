@@ -1,5 +1,5 @@
 import { BadgeCheck, CheckCircle, Ellipsis, Pencil } from 'lucide-react';
-import { Link } from 'react-router';
+import Link from 'next/link';
 import { Button } from '~/components/ui/button';
 import {
     DropdownMenu,
@@ -37,7 +37,7 @@ const PostHeader = ({ isPostSharing = false, isPostPage = false }: PostHeaderPro
     return (
         <div className="flex justify-between items-center gap-3">
             {/* User info section */}
-            <Link to={`/profile/${userId}`} className="flex items-center gap-3">
+            <Link href={`/profile/${userId}`} className="flex items-center gap-3">
                 <UserAvatar url={profileImageUrl} username={userName} />
 
                 <div className="flex flex-col">

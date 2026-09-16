@@ -1,5 +1,5 @@
 import { useState, type FC } from "react";
-import { Link } from "react-router";
+import Link from "next/link";
 import type { PostType } from "~/shared/types/post-types";
 import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -48,7 +48,7 @@ const markdownComponents: Components = {
 
         return (
             <Link
-                to={safeHref}
+                href={safeHref}
                 target="_blank"
                 rel="noopener noreferrer nofollow"
                 className="text-blue-600 underline break-all hover:text-blue-400"
