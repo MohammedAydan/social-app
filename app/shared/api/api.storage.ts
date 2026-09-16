@@ -26,15 +26,18 @@ export const uploadAsset = async (
             }
         );
         return response.data;
-    } catch (error: any) {
-        if (error.response?.data) {
-            return error.response.data;
+    } catch (error: unknown) {
+        const requestError = error as {
+            response?: { data?: ApiResponse<string> };
+            message?: string;
+        };
+        if (requestError.response?.data) {
+            return requestError.response.data;
         }
-        // Return a standardized error response instead of throwing
         return {
             success: false,
             data: "",
-            message: error.message || "Unknown upload error"
+            message: requestError.message || "Unknown upload error"
         };
     }
 };

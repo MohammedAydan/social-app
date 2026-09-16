@@ -1,7 +1,16 @@
 const nextConfig = {
-  env: {
-    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.VITE_API_BASE_URL,
-    NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY ?? process.env.VITE_API_KEY,
+  poweredByHeader: false,
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Strict-Transport-Security", value: "max-age=63072000" },
+        ],
+      },
+    ];
   },
 };
 

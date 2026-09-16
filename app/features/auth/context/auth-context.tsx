@@ -63,7 +63,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             if (!response.success) {
                 setErrorMessage(response.message ?? "Login failed.");
-                setErrors(response.errors ?? null);
+                setErrors(Array.isArray(response.errors) ? response.errors.filter((error): error is string => typeof error === "string") : null);
                 return; // Exit early
             }
 
@@ -72,8 +72,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             setUser(currentUser);
             setIsAuthenticated(true);
-        } catch (err: any) {
-            setErrorMessage(err.message || "Login error");
+        } catch (error: unknown) {
+            setErrorMessage(error instanceof Error ? error.message : "Login error");
         } finally {
             setLoading(false);
         }
@@ -88,7 +88,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             if (!response.success) {
                 setErrorMessage(response.message ?? "Registration failed.");
-                setErrors(response.errors ?? null);
+                setErrors(Array.isArray(response.errors) ? response.errors.filter((error): error is string => typeof error === "string") : null);
                 return;
             }
 
@@ -97,8 +97,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             setUser(currentUser);
             setIsAuthenticated(true);
-        } catch (err: any) {
-            setErrorMessage(err.message || "Registration error");
+        } catch (error: unknown) {
+            setErrorMessage(error instanceof Error ? error.message : "Registration error");
         } finally {
             setLoading(false);
         }

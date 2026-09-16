@@ -1,14 +1,18 @@
 import type { ApiResponse } from "./api.response";
 
-export const handleRequest = async <T>(request: Promise<any>): Promise<ApiResponse<T>> => {
+type ResponseLike<T> = { data: ApiResponse<T> };
+
+type RequestError = Error & {
+    response?: { data?: ApiResponse<unknown> };
+};
+
+export const handleRequest = async <T>(request: Promise<ResponseLike<T>>): Promise<ApiResponse<T>> => {
     try {
         const response = await request;
         return response.data;
-    } catch (error: any) {
-        // console.log(error);
-        if (error.response?.data) {
-            return error.response.data;
-        }
-        throw new Error(error.message || "Unknown error");
+    } catch (error: unknown) {
+        const requestError = error as RequestError;
+        if (requestError.response?.data) return requestError.response.data as ApiResponse<T>;
+        throw new Error(requestError.message || "Unknown error");
     }
 };

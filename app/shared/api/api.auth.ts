@@ -10,11 +10,15 @@ export const registerUser = async (
     try {
         const response = await api.post<ApiResponse<AuthResponseType>>("/api/User/register", userData);
         return response.data; 
-    } catch (error: any) {
-        if (error.response?.data) {
-            return error.response.data;
+    } catch (error: unknown) {
+        const requestError = error as {
+            response?: { data?: ApiResponse<AuthResponseType> };
+            message?: string;
+        };
+        if (requestError.response?.data) {
+            return requestError.response.data;
         }
-        throw new Error(error.message || "Unknown registration error");
+        throw new Error(requestError.message || "Unknown registration error");
     }
 };
 
@@ -24,10 +28,14 @@ export const signInUser = async (
     try {
         const response = await api.post<ApiResponse<AuthResponseType>>("/api/User/sign-in", credentials);
         return response.data;
-    } catch (error: any) {
-        if (error.response?.data) {
-            return error.response.data;
+    } catch (error: unknown) {
+        const requestError = error as {
+            response?: { data?: ApiResponse<AuthResponseType> };
+            message?: string;
+        };
+        if (requestError.response?.data) {
+            return requestError.response.data;
         }
-        throw new Error(error.message || "Unknown sign-in error");
+        throw new Error(requestError.message || "Unknown sign-in error");
     }
 };
