@@ -28,7 +28,6 @@ const SignInPage = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await login(values.email, values.password);
-      if (process.env.NODE_ENV === "development") console.log(values);
     } catch (error) {
       // console.error("Login failed", error);
       form.setError("email", { message: "Invalid email or password" });

@@ -27,7 +27,8 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 function toUrl(path: string, query?: Record<string, string | number | boolean | null | undefined>) {
-  const url = new URL(path, API_BASE_URL || window.location.origin);
+  const origin = API_BASE_URL || (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
+  const url = new URL(path, origin);
   Object.entries(query ?? {}).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== "") url.searchParams.set(key, String(value));
   });

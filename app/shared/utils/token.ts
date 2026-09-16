@@ -3,30 +3,32 @@ import { accessTokenKey, refreshTokenKey } from "./strings";
 // access token
 
 export const saveAccessToken = (accessToken?: string): void => {
-    if (accessToken == null) return;
-    localStorage.setItem(accessTokenKey, accessToken);
+    if (typeof window === "undefined" || accessToken == null) return;
+    window.localStorage.setItem(accessTokenKey, accessToken);
 }
 
 export const getAccessToken = (): string | null => {
-    return localStorage.getItem(accessTokenKey) ?? null;
+    if (typeof window === "undefined") return null;
+    return window.localStorage.getItem(accessTokenKey) ?? null;
 }
 
 export const removeAccessToken = (): void => {
-    localStorage.removeItem(accessTokenKey);
+    if (typeof window !== "undefined") window.localStorage.removeItem(accessTokenKey);
 }
 
 
 // refresh token
 
 export const saveRefreshToken = (refreshToken?: string): void => {
-    if (refreshToken == null) return;
-    localStorage.setItem(refreshTokenKey, refreshToken);
+    if (typeof window === "undefined" || refreshToken == null) return;
+    window.localStorage.setItem(refreshTokenKey, refreshToken);
 }
 
 export const getRefreshToken = (): string | null => {
-    return localStorage.getItem(refreshTokenKey) ?? null;
+    if (typeof window === "undefined") return null;
+    return window.localStorage.getItem(refreshTokenKey) ?? null;
 }
 
 export const removeRefreshToken = (): void => {
-    localStorage.removeItem(refreshTokenKey);
+    if (typeof window !== "undefined") window.localStorage.removeItem(refreshTokenKey);
 }
