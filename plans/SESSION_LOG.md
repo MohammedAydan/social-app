@@ -92,3 +92,38 @@ Read `plans/context.md` + last entry here. Next work: live smoke test, then admi
 ### Resume instructions
 Read `plans/context.md` + last entry here. E2E reruns need User A creds via env (`E2E_USER_A_*`); registration may 429 after bursts (spec backs off; B-override fallback available).
 ---
+
+## Session: 2026-09-17 (post-reporting closed)
+### What was done
+- All 3 tasks `[x]` via 3 subagents (facade, UI, tests) + solo close-out. Report/create/mine/cancel facades, `ReportType`, report dialog + hook + PostHeader wiring, 23 new tests.
+- Gates: `npm test` 115/115 (42 suites) · typecheck 0 · build 0 (client + SSR) · sweep clean.
+- Close-out fix: extracted pure helpers to alias-free `app/shared/utils/report-helpers.ts` (facade re-exports; UI untouched) so `parseReportPayload`/`classifyReportError` are directly unit-tested; fixed a self-caught unused-name typecheck error.
+
+### Decisions made
+- Helper logic that needs unit tests lives in alias-free leaf modules (`~/` facades are unimportable under `tsconfig.test.json`) — pattern recorded in review.md. Reason: keep repo `~/` convention under Vite.
+- No `/reports/mine` page (out of scope; facade ready).
+
+### Files changed
+- `app/shared/api/api.posts.ts` (report facades, re-exports), `app/shared/types/report-type.ts` (new), `app/shared/utils/report-helpers.ts` (+test, new), `app/features/feed/hooks/use-report-post.tsx` (new), `app/features/feed/components/report-post-dialog.tsx` (new), `app/shared/components/post/post-header.tsx` (Report menu item), `app/shared/api/api.posts.reports.test.ts` (new), `tsconfig.test.json`, `plans/post-reporting/*` (4 files).
+
+### State at end of session
+- Active feature: none.
+- Next task: none pending — suggested: `/reports/mine` page, admin moderation queue UI.
+- Blockers: none.
+
+### Resume instructions
+Read `plans/context.md` + last entry here. For report UI work see `plans/post-reporting/review.md`.
+---
+
+## Session: 2026-09-17 (login-session-fix closed)
+### What was done
+- Identified SDK standalone client reading access_token while AuthService writes ACCESS_TOKEN. Restored shared axios delegation (ADR-002), API-key/refresh behavior and SSR-safe storage access.
+- Added tests/e2e/login-session.spec.ts: live UI login → feed 200 with stored Bearer → full reload → profile/feed 200, stays signed in. 1 passed (4.7s). No traces/credential logs retained.
+- Final gates: 115 unit tests pass (42 suites), typecheck and client/SSR build exit 0. Existing build warnings remain. No lint/formatter script configured.
+### Files changed
+- app/lib/sdk/custom-instance.ts; app/shared/api/axios.ts; tests/e2e/login-session.spec.ts; plans/login-session-fix/*; plans/ARCH.md; plans/context.md.
+### State and resume instructions
+- Closed; no auth-layout change. Broader transient-failure token-clearing policy remains unchanged (see review).
+- Production test server started via npm start on localhost:3000, left available for manual confirmation.
+- To rerun only this regression: set E2E_USER_A_EMAIL/E2E_USER_A_PASSWORD in process env and run npx playwright test tests/e2e/login-session.spec.ts. No account/post mutations needed.
+---

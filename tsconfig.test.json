@@ -21,6 +21,8 @@
     "app/shared/utils/display-name.test.ts",
     "app/shared/utils/token.ts",
     "app/shared/utils/token.test.ts",
+    "app/shared/utils/report-helpers.ts",
+    "app/shared/utils/report-helpers.test.ts",
     "app/features/profile/utils/follow-sequence.test.ts",
     "app/lib/sdk/validations/follow/follow.test.ts",
     "app/shared/api/api.handle-request.ts",
@@ -30,6 +32,7 @@
     "app/lib/sdk/validations/like/like.test.ts",
     "app/lib/sdk/validations/block-user/block-user.test.ts",
     "app/lib/sdk/validations/notifications/notifications.test.ts",
-    "app/lib/sdk/validations/user/user.test.ts"
+    "app/lib/sdk/validations/user/user.test.ts",
+    "app/shared/api/api.posts.reports.test.ts"
   ]
 }

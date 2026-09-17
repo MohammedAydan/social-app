@@ -27,7 +27,9 @@ import type {
   CreatePostRequest,
   GetApiPostsFeedParams,
   GetApiPostsMyPostsParams,
+  GetApiPostsReportsMineParams,
   GetApiPostsUserUserIdParams,
+  ReportPostRequest,
   SharePostRequest,
   UpdatePostRequest
 } from '../../models';
@@ -634,6 +636,247 @@ export function useDeleteApiPostsPostId<TData = Awaited<ReturnType<typeof delete
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDeleteApiPostsPostIdQueryOptions(postId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getApiPostsReportsMine = (
+    params?: GetApiPostsReportsMineParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<void>(
+      {url: `/api/Posts/reports/mine`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getGetApiPostsReportsMineMutationKey = () => ['getApiPostsReportsMine'] as const;
+
+export const getGetApiPostsReportsMineMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApiPostsReportsMine>>, TError,GetApiPostsReportsMineMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof getApiPostsReportsMine>>, TError,GetApiPostsReportsMineMutationVariables, TContext> => {
+
+const mutationKey = getGetApiPostsReportsMineMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getApiPostsReportsMine>>, GetApiPostsReportsMineMutationVariables> = (props) => {
+          const {params} = props ?? {};
+
+          return  getApiPostsReportsMine(params,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetApiPostsReportsMineMutationResult = NonNullable<Awaited<ReturnType<typeof getApiPostsReportsMine>>>
+
+    export type GetApiPostsReportsMineMutationError = ErrorType<unknown>
+    export type GetApiPostsReportsMineMutationVariables = {params?: GetApiPostsReportsMineParams}
+
+    export const useGetApiPostsReportsMine = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApiPostsReportsMine>>, TError,GetApiPostsReportsMineMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof getApiPostsReportsMine>>,
+        TError,
+        GetApiPostsReportsMineMutationVariables,
+        TContext
+      > => {
+      return useMutation(getGetApiPostsReportsMineMutationOptions(options), queryClient);
+    }
+    export const postApiPostsPostIdReport = (
+    postId: string,
+    reportPostRequest: BodyType<ReportPostRequest>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<void>(
+      {url: `/api/Posts/${postId}/report`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: reportPostRequest, signal
+    },
+      options);
+    }
+
+
+
+
+export const getPostApiPostsPostIdReportQueryKey = (postId: string,
+    reportPostRequest?: BodyType<ReportPostRequest>,) => {
+    return [
+    'POST', `/api/Posts/${postId}/report`, reportPostRequest
+    ] as const;
+    }
+
+
+export const getPostApiPostsPostIdReportQueryOptions = <TData = Awaited<ReturnType<typeof postApiPostsPostIdReport>>, TError = ErrorType<unknown>>(postId: string,
+    reportPostRequest: BodyType<ReportPostRequest>, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postApiPostsPostIdReport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPostApiPostsPostIdReportQueryKey(postId,reportPostRequest);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof postApiPostsPostIdReport>>> = ({ signal }) => postApiPostsPostIdReport(postId,reportPostRequest, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: postId !== null && postId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof postApiPostsPostIdReport>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PostApiPostsPostIdReportQueryResult = NonNullable<Awaited<ReturnType<typeof postApiPostsPostIdReport>>>
+export type PostApiPostsPostIdReportQueryError = ErrorType<unknown>
+
+
+export function usePostApiPostsPostIdReport<TData = Awaited<ReturnType<typeof postApiPostsPostIdReport>>, TError = ErrorType<unknown>>(
+ postId: string,
+    reportPostRequest: BodyType<ReportPostRequest>, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof postApiPostsPostIdReport>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postApiPostsPostIdReport>>,
+          TError,
+          Awaited<ReturnType<typeof postApiPostsPostIdReport>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostApiPostsPostIdReport<TData = Awaited<ReturnType<typeof postApiPostsPostIdReport>>, TError = ErrorType<unknown>>(
+ postId: string,
+    reportPostRequest: BodyType<ReportPostRequest>, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postApiPostsPostIdReport>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postApiPostsPostIdReport>>,
+          TError,
+          Awaited<ReturnType<typeof postApiPostsPostIdReport>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostApiPostsPostIdReport<TData = Awaited<ReturnType<typeof postApiPostsPostIdReport>>, TError = ErrorType<unknown>>(
+ postId: string,
+    reportPostRequest: BodyType<ReportPostRequest>, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postApiPostsPostIdReport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function usePostApiPostsPostIdReport<TData = Awaited<ReturnType<typeof postApiPostsPostIdReport>>, TError = ErrorType<unknown>>(
+ postId: string,
+    reportPostRequest: BodyType<ReportPostRequest>, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postApiPostsPostIdReport>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPostApiPostsPostIdReportQueryOptions(postId,reportPostRequest,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const deleteApiPostsReportsReportId = (
+    reportId: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<void>(
+      {url: `/api/Posts/reports/${reportId}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getDeleteApiPostsReportsReportIdQueryKey = (reportId: string,) => {
+    return [
+    'DELETE', `/api/Posts/reports/${reportId}`
+    ] as const;
+    }
+
+
+export const getDeleteApiPostsReportsReportIdQueryOptions = <TData = Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>, TError = ErrorType<unknown>>(reportId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDeleteApiPostsReportsReportIdQueryKey(reportId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>> = ({ signal }) => deleteApiPostsReportsReportId(reportId, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: reportId !== null && reportId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type DeleteApiPostsReportsReportIdQueryResult = NonNullable<Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>>
+export type DeleteApiPostsReportsReportIdQueryError = ErrorType<unknown>
+
+
+export function useDeleteApiPostsReportsReportId<TData = Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>, TError = ErrorType<unknown>>(
+ reportId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>,
+          TError,
+          Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeleteApiPostsReportsReportId<TData = Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>, TError = ErrorType<unknown>>(
+ reportId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>,
+          TError,
+          Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useDeleteApiPostsReportsReportId<TData = Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>, TError = ErrorType<unknown>>(
+ reportId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useDeleteApiPostsReportsReportId<TData = Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>, TError = ErrorType<unknown>>(
+ reportId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof deleteApiPostsReportsReportId>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getDeleteApiPostsReportsReportIdQueryOptions(reportId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

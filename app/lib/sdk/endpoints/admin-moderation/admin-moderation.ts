@@ -27,7 +27,9 @@ import type {
   AdminModerationActionRequest,
   AdminUpdateVisibilityRequest,
   DeleteApiAdminModerationPostsPostIdParams,
-  GetApiAdminModerationFeedParams
+  GetApiAdminModerationFeedParams,
+  GetApiAdminModerationReportsParams,
+  ResolveReportRequest
 } from '../../models';
 
 import { customInstance } from '../../custom-instance';
@@ -671,6 +673,220 @@ export function useDeleteApiAdminModerationPostsPostId<TData = Awaited<ReturnTyp
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getDeleteApiAdminModerationPostsPostIdQueryOptions(postId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getApiAdminModerationReports = (
+    params?: GetApiAdminModerationReportsParams,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<void>(
+      {url: `/api/admin/moderation/reports`, method: 'GET',
+        params, signal
+    },
+      options);
+    }
+
+
+
+
+export const getGetApiAdminModerationReportsMutationKey = () => ['getApiAdminModerationReports'] as const;
+
+export const getGetApiAdminModerationReportsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApiAdminModerationReports>>, TError,GetApiAdminModerationReportsMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof getApiAdminModerationReports>>, TError,GetApiAdminModerationReportsMutationVariables, TContext> => {
+
+const mutationKey = getGetApiAdminModerationReportsMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getApiAdminModerationReports>>, GetApiAdminModerationReportsMutationVariables> = (props) => {
+          const {params} = props ?? {};
+
+          return  getApiAdminModerationReports(params,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetApiAdminModerationReportsMutationResult = NonNullable<Awaited<ReturnType<typeof getApiAdminModerationReports>>>
+
+    export type GetApiAdminModerationReportsMutationError = ErrorType<unknown>
+    export type GetApiAdminModerationReportsMutationVariables = {params?: GetApiAdminModerationReportsParams}
+
+    export const useGetApiAdminModerationReports = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApiAdminModerationReports>>, TError,GetApiAdminModerationReportsMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof getApiAdminModerationReports>>,
+        TError,
+        GetApiAdminModerationReportsMutationVariables,
+        TContext
+      > => {
+      return useMutation(getGetApiAdminModerationReportsMutationOptions(options), queryClient);
+    }
+    export const getApiAdminModerationReportsReportId = (
+    reportId: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<void>(
+      {url: `/api/admin/moderation/reports/${reportId}`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getGetApiAdminModerationReportsReportIdMutationKey = () => ['getApiAdminModerationReportsReportId'] as const;
+
+export const getGetApiAdminModerationReportsReportIdMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApiAdminModerationReportsReportId>>, TError,GetApiAdminModerationReportsReportIdMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof getApiAdminModerationReportsReportId>>, TError,GetApiAdminModerationReportsReportIdMutationVariables, TContext> => {
+
+const mutationKey = getGetApiAdminModerationReportsReportIdMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getApiAdminModerationReportsReportId>>, GetApiAdminModerationReportsReportIdMutationVariables> = (props) => {
+          const {reportId} = props ?? {};
+
+          return  getApiAdminModerationReportsReportId(reportId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetApiAdminModerationReportsReportIdMutationResult = NonNullable<Awaited<ReturnType<typeof getApiAdminModerationReportsReportId>>>
+
+    export type GetApiAdminModerationReportsReportIdMutationError = ErrorType<unknown>
+    export type GetApiAdminModerationReportsReportIdMutationVariables = {reportId: string}
+
+    export const useGetApiAdminModerationReportsReportId = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getApiAdminModerationReportsReportId>>, TError,GetApiAdminModerationReportsReportIdMutationVariables, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof getApiAdminModerationReportsReportId>>,
+        TError,
+        GetApiAdminModerationReportsReportIdMutationVariables,
+        TContext
+      > => {
+      return useMutation(getGetApiAdminModerationReportsReportIdMutationOptions(options), queryClient);
+    }
+    export const postApiAdminModerationReportsReportIdResolve = (
+    reportId: string,
+    resolveReportRequest: BodyType<ResolveReportRequest>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+
+
+      return customInstance<void>(
+      {url: `/api/admin/moderation/reports/${reportId}/resolve`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resolveReportRequest, signal
+    },
+      options);
+    }
+
+
+
+
+export const getPostApiAdminModerationReportsReportIdResolveQueryKey = (reportId: string,
+    resolveReportRequest?: BodyType<ResolveReportRequest>,) => {
+    return [
+    'POST', `/api/admin/moderation/reports/${reportId}/resolve`, resolveReportRequest
+    ] as const;
+    }
+
+
+export const getPostApiAdminModerationReportsReportIdResolveQueryOptions = <TData = Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>, TError = ErrorType<unknown>>(reportId: string,
+    resolveReportRequest: BodyType<ResolveReportRequest>, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getPostApiAdminModerationReportsReportIdResolveQueryKey(reportId,resolveReportRequest);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>> = ({ signal }) => postApiAdminModerationReportsReportIdResolve(reportId,resolveReportRequest, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: reportId !== null && reportId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type PostApiAdminModerationReportsReportIdResolveQueryResult = NonNullable<Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>>
+export type PostApiAdminModerationReportsReportIdResolveQueryError = ErrorType<unknown>
+
+
+export function usePostApiAdminModerationReportsReportIdResolve<TData = Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>, TError = ErrorType<unknown>>(
+ reportId: string,
+    resolveReportRequest: BodyType<ResolveReportRequest>, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>,
+          TError,
+          Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostApiAdminModerationReportsReportIdResolve<TData = Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>, TError = ErrorType<unknown>>(
+ reportId: string,
+    resolveReportRequest: BodyType<ResolveReportRequest>, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>,
+          TError,
+          Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function usePostApiAdminModerationReportsReportIdResolve<TData = Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>, TError = ErrorType<unknown>>(
+ reportId: string,
+    resolveReportRequest: BodyType<ResolveReportRequest>, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function usePostApiAdminModerationReportsReportIdResolve<TData = Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>, TError = ErrorType<unknown>>(
+ reportId: string,
+    resolveReportRequest: BodyType<ResolveReportRequest>, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof postApiAdminModerationReportsReportIdResolve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getPostApiAdminModerationReportsReportIdResolveQueryOptions(reportId,resolveReportRequest,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

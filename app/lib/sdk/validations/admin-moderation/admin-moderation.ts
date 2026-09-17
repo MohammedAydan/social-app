@@ -78,3 +78,31 @@ export const DeleteApiAdminModerationPostsPostIdQueryParams = zod.object({
 
 export const DeleteApiAdminModerationPostsPostIdResponse = zod.unknown()
 
+export const getApiAdminModerationReportsQueryPageDefault = 1;
+export const getApiAdminModerationReportsQueryPageSizeDefault = 20;
+
+export const GetApiAdminModerationReportsQueryParams = zod.object({
+  "status": zod.string().optional(),
+  "page": zod.number().int().default(getApiAdminModerationReportsQueryPageDefault),
+  "pageSize": zod.number().int().default(getApiAdminModerationReportsQueryPageSizeDefault)
+})
+
+export const GetApiAdminModerationReportsResponse = zod.unknown()
+
+export const GetApiAdminModerationReportsReportIdParams = zod.object({
+  "reportId": zod.string()
+})
+
+export const GetApiAdminModerationReportsReportIdResponse = zod.unknown()
+
+export const PostApiAdminModerationReportsReportIdResolveParams = zod.object({
+  "reportId": zod.string()
+})
+
+export const PostApiAdminModerationReportsReportIdResolveBody = zod.object({
+  "action": zod.string().optional(),
+  "note": zod.string().nullish()
+})
+
+export const PostApiAdminModerationReportsReportIdResolveResponse = zod.unknown()
+

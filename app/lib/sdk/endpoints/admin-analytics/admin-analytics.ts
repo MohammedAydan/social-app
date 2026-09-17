@@ -20,9 +20,8 @@ import type {
   GetApiAdminAnalyticsSafetyMetricsParams,
   GetApiAdminAnalyticsUserGrowthParams
 } from '../../models';
+import { customInstance, type ErrorType } from '../../custom-instance';
 
-import { customInstance } from '../../custom-instance';
-import type { ErrorType } from '../../custom-instance';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];

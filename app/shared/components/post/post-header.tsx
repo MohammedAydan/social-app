@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BadgeCheck, Ban, CheckCircle, Ellipsis, Pencil } from 'lucide-react';
+import { BadgeCheck, Ban, CheckCircle, Ellipsis, Flag, Pencil } from 'lucide-react';
 import { Link } from 'react-router';
 import { Button } from '~/components/ui/button';
 import {
@@ -18,6 +18,7 @@ import {
 } from '~/components/ui/dropdown-menu';
 import { usePost } from '~/features/feed/hooks/use-post';
 import DeletePost from '~/features/feed/components/delete-post';
+import ReportPostDialog from '~/features/feed/components/report-post-dialog';
 import UserAvatar from '../user-avatar';
 import { useAuth } from '~/features/auth/hooks/use-auth';
 import { formatRelativeTime } from '~/lib/utils';
@@ -90,15 +91,16 @@ const PostHeader = ({ isPostSharing = false, isPostPage = false, post: postOverr
 
             {/* Others' posts: expose Block author (two-way block, §2.3). */}
             {!isPostSharing && !isOwnPost && !!user?.id && !!post?.userId && (
-                <BlockAuthorMenu authorId={post.userId} authorName={userInfo?.userName} />
+                <BlockAuthorMenu authorId={post.userId} authorName={userInfo?.userName} postId={post?.id ?? ""} />
             )}
         </div>
     );
 };
 
-/** Dropdown with a confirm dialog to block the post author. */
-const BlockAuthorMenu = ({ authorId, authorName }: { authorId: string; authorName?: string }) => {
+/** Dropdown with Block confirm + Report dialog for the post author. */
+const BlockAuthorMenu = ({ authorId, authorName, postId }: { authorId: string; authorName?: string; postId: string }) => {
     const [confirmOpen, setConfirmOpen] = useState(false);
+    const [reportOpen, setReportOpen] = useState(false);
     const { data: isBlocked } = useIsBlocked(authorId);
     const { block, unblock, isPending } = useBlockUser(authorId);
 
@@ -112,6 +114,12 @@ const BlockAuthorMenu = ({ authorId, authorName }: { authorId: string; authorNam
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[150px]">
+                    {postId ? (
+                        <DropdownMenuItem onClick={() => setReportOpen(true)}>
+                            <Flag className="mr-2 h-4 w-4" />
+                            Report
+                        </DropdownMenuItem>
+                    ) : null}
                     {isBlocked ? (
                         <DropdownMenuItem onClick={unblock} disabled={isPending}>
                             Unblock{authorName ? ` @${authorName}` : ""}
@@ -153,6 +161,9 @@ const BlockAuthorMenu = ({ authorId, authorName }: { authorId: string; authorNam
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            {postId ? (
+                <ReportPostDialog postId={postId} open={reportOpen} onOpenChange={setReportOpen} />
+            ) : null}
         </>
     );
 };

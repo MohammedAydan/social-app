@@ -57,7 +57,7 @@ const redirectToSignIn = () => {
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem(accessTokenKey);
+    const token = typeof window === "undefined" ? null : localStorage.getItem(accessTokenKey);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

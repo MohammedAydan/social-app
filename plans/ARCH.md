@@ -21,6 +21,7 @@ Component `useMutation`/`useInfiniteQuery` â†’ `shared/api` facade (Zod-parse â†
 ## Boundaries & Invariants
 - SDK generated files are not hand-edited (import-path repair only).
 - `handleRequest` must accept BOTH `AxiosResponse` (manual layer) and unwrapped envelopes (SDK `customInstance`).
+- Preserve the app-owned SDK mutator when refreshing generated output: it delegates to the shared transport and must not create an independent client reading `access_token`. Login persistence uses `ACCESS_TOKEN`; `tests/e2e/login-session.spec.ts` verifies actual Bearer headers and reload restoration.
 - Visibility sent as PascalCase (`normalizeVisibility`); like toggle is POST-only.
 
 ## Security Model

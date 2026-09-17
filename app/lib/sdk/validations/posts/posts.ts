@@ -97,3 +97,30 @@ export const DeleteApiPostsPostIdParams = zod.object({
 
 export const DeleteApiPostsPostIdResponse = zod.unknown()
 
+export const getApiPostsReportsMineQueryPageDefault = 1;
+export const getApiPostsReportsMineQueryLimitDefault = 20;
+
+export const GetApiPostsReportsMineQueryParams = zod.object({
+  "Page": zod.number().int().default(getApiPostsReportsMineQueryPageDefault),
+  "Limit": zod.number().int().default(getApiPostsReportsMineQueryLimitDefault)
+})
+
+export const GetApiPostsReportsMineResponse = zod.unknown()
+
+export const PostApiPostsPostIdReportParams = zod.object({
+  "postId": zod.string()
+})
+
+export const PostApiPostsPostIdReportBody = zod.object({
+  "reason": zod.string().optional(),
+  "details": zod.string().nullish()
+})
+
+export const PostApiPostsPostIdReportResponse = zod.unknown()
+
+export const DeleteApiPostsReportsReportIdParams = zod.object({
+  "reportId": zod.string()
+})
+
+export const DeleteApiPostsReportsReportIdResponse = zod.unknown()
+

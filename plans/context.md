@@ -3,7 +3,7 @@
 Social web app (posts, follows, likes, comments, notifications, blocking) with a .NET backend at `VITE_API_BASE_URL`. Frontend is React Router v7 + TanStack Query; all API traffic must go through the Orval-generated SDK at `app/lib/sdk`.
 
 ## Current Status
-- Active feature: (none — platform-verification closed)
+- Active feature: (none — login-session-fix closed)
 - Overall health: green
 - Last updated: 2026-09-17
 
@@ -16,6 +16,7 @@ Social web app (posts, follows, likes, comments, notifications, blocking) with a
 - posts-sdk-migration: closed 2026-09-16 (all gates green)
 - full-sdk-migration: closed 2026-09-16 (all gates green)
 - platform-verification: closed 2026-09-17 (92/92 unit, E2E 1 passed live)
+- post-reporting: closed 2026-09-17 (115/115 unit, typecheck 0, build 0)
 
 ## Known Issues / Tech Debt
 - Generated SDK endpoint fns declare `customInstance<void>` (envelopes flow as `any`) — fix at Orval-config level when available.
